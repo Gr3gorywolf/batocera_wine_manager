@@ -12,20 +12,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      
       - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@v1
         with:
-          flutter-version: '2.x'  # Adjust Flutter version as needed
-      
+          flutter-version: '3.3.5'
+          channel: 'stable' # or: 'beta' or 'dev'
       - name: Install dependencies
         run: flutter pub get
-      
       - name: Build Linux AppImage
         run: flutter build linux --release
       - uses: actions/upload-artifact@v3
         with:
-          name: wine_manager.apk
+          name: wine_manager.AppImage
           path: build/linux/release/bundle/flutter_project-x64.AppImage
       - uses: ncipollo/release-action@v1
         with:
