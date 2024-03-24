@@ -1,1 +1,1 @@
-/userdata/system/wine_manager/run.sh
+chmod +x /userdata/system/wine_manager/batocera_wine_manager  && /userdata/system/wine_manager/batocera_wine_manager
