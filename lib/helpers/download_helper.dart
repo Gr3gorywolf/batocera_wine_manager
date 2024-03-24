@@ -34,6 +34,10 @@ class DownloadHelper {
             progress: progress,
             key: REDIST_DOWNLOAD_LINK));
       });
+      var redistPathDir = Directory(REDIST_PATH_DISABLED);
+      if (!redistPathDir.existsSync()) {
+        redistPathDir.createSync();
+      }
       ProcessResult result = await Process.run('tar', [
         '-xvf',
         downloadUrl,

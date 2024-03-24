@@ -26,8 +26,8 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: wine_manager.AppImage
-          path: build/linux/release/bundle/flutter_project-x64.AppImage
+          path:  build/linux/x64/release/bundle/batocera_wine_manager.AppImage
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/linux/release/bundle/*"
+          artifacts: " build/linux/x64/release/bundle/*"
           tag: v1.0.0-${{ github.run_number }}
