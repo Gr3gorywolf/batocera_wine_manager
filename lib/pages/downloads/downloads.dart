@@ -1,7 +1,11 @@
+import 'package:batocera_wine_manager/constants/paths.dart';
 import 'package:batocera_wine_manager/constants/urls.dart';
 import 'package:batocera_wine_manager/helpers/common_helpers.dart';
 import 'package:batocera_wine_manager/helpers/download_helper.dart';
+import 'package:batocera_wine_manager/helpers/file_system_helper.dart';
+import 'package:batocera_wine_manager/models/download.dart';
 import 'package:batocera_wine_manager/models/github_release.dart';
+import 'package:batocera_wine_manager/pages/downloads/proton_list_item.dart';
 import 'package:batocera_wine_manager/widget/DownloadIconButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -18,11 +22,32 @@ class _DownloadsPageState extends State<DownloadsPage> {
   List<GithubRelease> protonReleases = [];
   var isFetchingReleases = false;
   var titleTextStyle = TextStyle(fontSize: 20, color: Colors.red);
+  bool? redistInstallActive = null;
+  var activeProtonName = null;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     fetchReleases();
+    initializeActiveProton();
+    initializeRedistActivation();
+  }
+
+  initializeRedistActivation() async {
+    setState(() {
+      redistInstallActive = FileSystemHelper.getRedistInstallActive();
+    });
+  }
+
+  initializeActiveProton() async {
+    var protonPath = await FileSystemHelper.getWineOverrideName();
+    setState(() {
+      if (protonPath != null) {
+        activeProtonName = Uri.parse(protonPath).pathSegments.last;
+      } else {
+        activeProtonName = null;
+      }
+    });
   }
 
   GithubReleaseAsset? getReleaseDownloadAsset(GithubRelease release) {
@@ -49,6 +74,23 @@ class _DownloadsPageState extends State<DownloadsPage> {
     });
   }
 
+  handleSetRedistActive(bool isActive) async {
+    var toggleResult = await FileSystemHelper.toggleRedist(isActive);
+    setState(() {
+      redistInstallActive = toggleResult;
+    });
+  }
+
+  handleOverrideProton(Download protonDownload) async {
+    var overrideSucced =
+        await FileSystemHelper.overrideWineVersion(protonDownload.fileName);
+    if (overrideSucced) {
+      setState(() {
+        activeProtonName = Uri.parse(protonDownload.fileName).pathSegments.last;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,9 +102,28 @@ class _DownloadsPageState extends State<DownloadsPage> {
             title: Text(
               "Download redistributables",
             ),
-            subtitle: Text(
-                "Those redistributables will allow you to install all the needed dependencies in the wine application's folder"),
-            trailing: DownloadIconButton(
+            subtitle: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                    "Those redistributables will allow you to install all the needed dependencies in the wine application's folder"),
+                ...redistInstallActive != null
+                    ? ([
+                        Row(
+                          children: [
+                            Switch(
+                                value: redistInstallActive ?? false,
+                                onChanged: handleSetRedistActive),
+                            Text(
+                                "Enable redistributables install on wine application launch")
+                          ],
+                        )
+                      ])
+                    : []
+              ],
+            ),
+            leading: DownloadIconButton(
                 downloadLink: REDIST_DOWNLOAD_LINK,
                 onPress: () {
                   DownloadHelper().downloadRedist();
@@ -77,30 +138,14 @@ class _DownloadsPageState extends State<DownloadsPage> {
                 ]
               : protonReleases.map((release) {
                   var releaseDownloadAsset = getReleaseDownloadAsset(release);
-                  return Column(
-                    children: [
-                      ListTile(
-                          title: Text(
-                            release.tagName ?? "",
-                          ),
-                          subtitle: Text(
-                            CommonHelpers.formatBytes(
-                                    releaseDownloadAsset?.size ?? 0, 1) +
-                                " - Not installed",
-                          ),
-                          trailing: DownloadIconButton(
-                              downloadLink:
-                                  releaseDownloadAsset?.browserDownloadUrl ??
-                                      '',
-                              onPress: () {
-                                DownloadHelper().downloadProton(
-                                  releaseDownloadAsset?.browserDownloadUrl ??
-                                      '',
-                                );
-                              })),
-                      Divider()
-                    ],
-                  );
+                  return ProtonListItem(
+                      isActive: activeProtonName == null
+                          ? false
+                          : releaseDownloadAsset?.browserDownloadUrl!
+                                  .contains(activeProtonName) ??
+                              false,
+                      toggleActive: handleOverrideProton,
+                      protonRelease: release);
                 })
         ],
       ),

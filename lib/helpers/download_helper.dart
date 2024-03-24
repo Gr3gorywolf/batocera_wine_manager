@@ -22,73 +22,82 @@ class DownloadHelper {
     }
   }
 
-  downloadRedist() async {
+  Future<bool> _downloadAndUncompress(
+      {required String url,
+      required String fileUrl,
+      required String logFileUrl,
+      String? folderToUncompress,
+      bool createOutputFolder = false}) async {
     DownloadController downloadController = Get.find();
-    var downloadUrl = path.join(WINE_PATH, 'exe.bak.tar.gz');
+    var outputFolder = folderToUncompress ?? fileUrl;
+    downloadController.setDownload(Download(
+        fileName: fileUrl, url: url, status: DownloadStatus.downloading));
     try {
-      var res = await Dio().download(REDIST_DOWNLOAD_LINK, downloadUrl,
+      var res = await Dio().download(url, fileUrl,
           onReceiveProgress: (received, total) async {
         var progress = (received / total * 100);
-        downloadController.setDownload(Download(
-            fileName: downloadUrl,
-            progress: progress,
-            key: REDIST_DOWNLOAD_LINK));
+        downloadController.setDownloadStatus(url, DownloadStatus.downloading,
+            progress: progress);
       });
-      var redistPathDir = Directory(REDIST_PATH_DISABLED);
-      if (!redistPathDir.existsSync()) {
-        redistPathDir.createSync();
+      downloadController.setDownloadStatus(url, DownloadStatus.uncompressing);
+      if (createOutputFolder) {
+        var outputFolderDir = Directory(outputFolder);
+        if (!outputFolderDir.existsSync()) {
+          outputFolderDir.createSync();
+        }
       }
       ProcessResult result = await Process.run('tar', [
         '-xvf',
-        downloadUrl,
+        fileUrl,
         '-C',
-        REDIST_PATH_DISABLED,
+        outputFolder,
       ]);
-      if (result.exitCode == 0) {
-        File(downloadUrl).deleteSync();
-        var logFile = File('$REDIST_PATH_DISABLED/download-log.txt');
-        logFile.writeAsStringSync(REDIST_DOWNLOAD_LINK);
+      if (true) {
+        File(fileUrl).deleteSync();
+        var logFile = File(logFileUrl);
+        logFile.writeAsStringSync(url);
+        downloadController.setDownload(Download(
+            fileName: path.dirname(logFileUrl),
+            url: url,
+            status: DownloadStatus.downloading));
       } else {
+        print("Failed to uncompress");
+        print(result.stdout);
+        print(fileUrl);
+        print(outputFolder);
+        downloadController.setDownloadStatus(url, DownloadStatus.none);
         return false;
       }
       return true;
     } catch (err) {
-      downloadController.setDownload(Download(
-          fileName: downloadUrl, progress: -1, key: REDIST_DOWNLOAD_LINK));
+      print(err);
+      downloadController.setDownloadStatus(url, DownloadStatus.none);
       return false;
     }
+  }
+
+  downloadRedist() async {
+    DownloadController downloadController = Get.find();
+    var fileUrl = path.join(WINE_PATH, 'exe.bak.tar.gz');
+    return await _downloadAndUncompress(
+        fileUrl: fileUrl,
+        url: REDIST_DOWNLOAD_LINK,
+        createOutputFolder: true,
+        folderToUncompress: REDIST_PATH_DISABLED,
+        logFileUrl: '$REDIST_PATH_DISABLED/download-log.txt');
   }
 
   Future<bool> downloadProton(String protonDownloadUrl) async {
     DownloadController downloadController = Get.find();
     var fileName = CommonHelpers.getFileNameFromUrl(protonDownloadUrl);
-    var downloadUrl = "$PROTONS_PATH/$fileName";
-    try {
-      var res = await Dio().download(protonDownloadUrl, downloadUrl,
-          onReceiveProgress: (received, total) async {
-        var progress = (received / total * 100);
-        downloadController.setDownload(Download(
-            fileName: downloadUrl, progress: progress, key: protonDownloadUrl));
-      });
-
-      ProcessResult result =
-          await Process.run('tar', ['-xvf', downloadUrl, '-C', PROTONS_PATH]);
-      if (result.exitCode == 0) {
-        File(downloadUrl).deleteSync();
-        var logFile = File(PROTONS_PATH +
-            "/" +
-            fileName.replaceAll(".tar.gz", "") +
-            '/download-log.txt');
-        logFile.writeAsStringSync(protonDownloadUrl);
-      } else {
-        return false;
-      }
-
-      return true;
-    } catch (err) {
-      downloadController.setDownload(Download(
-          fileName: downloadUrl, progress: -1, key: protonDownloadUrl));
-      return false;
-    }
+    var fileUrl = "$PROTONS_PATH/$fileName";
+    var uncompressFolder =
+        PROTONS_PATH + "/" + fileName.replaceAll(".tar.gz", "");
+    var logFile = '$uncompressFolder/download-log.txt';
+    return await _downloadAndUncompress(
+        url: protonDownloadUrl,
+        fileUrl: fileUrl,
+        logFileUrl: logFile,
+        folderToUncompress: PROTONS_PATH);
   }
 }

@@ -7,6 +7,10 @@ import 'package:get/get.dart';
 import '../constants/paths.dart';
 
 class FileSystemHelper {
+  static get wineOverrideFilePath {
+    return WINE_PATH + '_wine-override';
+  }
+
   static Directory? get redistDirectory {
     var redistDirectories = [
       Directory(REDIST_PATH),
@@ -23,7 +27,7 @@ class FileSystemHelper {
 
   static init() async {
     DownloadController downloadController = Get.find();
-    var requiredDirectories = [WINE_PATH, REDIST_PATH_DISABLED, PROTONS_PATH];
+    var requiredDirectories = [WINE_PATH, PROTONS_PATH];
     for (var path in requiredDirectories) {
       var currentDirectory = Directory(path);
       if (!currentDirectory.existsSync()) {
@@ -40,7 +44,10 @@ class FileSystemHelper {
         if (logFile.existsSync()) {
           var downloadUrl = logFile.readAsStringSync();
           downloadController.setDownload(Download(
-              fileName: fsEntity.path, progress: 100, key: downloadUrl));
+              fileName: fsEntity.path,
+              progress: 0,
+              url: downloadUrl,
+              status: DownloadStatus.downloaded));
         }
       }
     }
@@ -53,8 +60,72 @@ class FileSystemHelper {
       if (logFile.existsSync()) {
         var downloadUrl = logFile.readAsStringSync();
         downloadController.setDownload(Download(
-            fileName: redistDir.path, progress: 100, key: downloadUrl));
+            fileName: redistDir.path,
+            progress: 0,
+            url: downloadUrl,
+            status: DownloadStatus.downloaded));
       }
+    }
+  }
+
+  static bool? getRedistInstallActive() {
+    var activeRedistDir = Directory(REDIST_PATH);
+    var unactiveRedistDir = Directory(REDIST_PATH_DISABLED);
+    var isActive = activeRedistDir.existsSync();
+    if (!isActive && !unactiveRedistDir.existsSync()) {
+      return null;
+    }
+    return isActive;
+  }
+
+  static Future<String?> getWineOverrideName() async {
+    var regFile = File(wineOverrideFilePath);
+    if (regFile.existsSync()) {
+      return await regFile.readAsString();
+    }
+    return null;
+  }
+
+  static Future<bool> toggleRedist(bool enable) async {
+    var disabledDirectory = Directory(REDIST_PATH_DISABLED);
+    var enabledDirectory = Directory(REDIST_PATH);
+    try {
+      if (enable && disabledDirectory.existsSync()) {
+        await disabledDirectory.rename(REDIST_PATH);
+      }
+      if (!enable && enabledDirectory.existsSync()) {
+        await enabledDirectory.rename(REDIST_PATH_DISABLED);
+      }
+      return enable;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  static disableWineOverride() async {
+    var symLink = Link(PROTON_OVERRIDE_PATH);
+    if (symLink.existsSync()) {
+      await symLink.delete();
+      var regFile = File(wineOverrideFilePath);
+      if (regFile.existsSync()) {
+        regFile.deleteSync();
+      }
+    }
+  }
+
+  static Future<bool> overrideWineVersion(String wineFile) async {
+    try {
+      var symLink = Link('$wineFile/files');
+      if (symLink.existsSync()) {
+        await symLink.delete();
+      }
+      await symLink.create(PROTON_OVERRIDE_PATH);
+      var regFile = File(wineOverrideFilePath);
+      regFile.writeAsString(wineFile);
+      return true;
+    } catch (err) {
+      print(err);
+      return false;
     }
   }
 }
