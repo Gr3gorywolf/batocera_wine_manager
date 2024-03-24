@@ -25,8 +25,8 @@ jobs:
         run: flutter build linux --release
       - uses: actions/upload-artifact@v3
         with:
-          name: wine_manager.AppImage
-          path:  build/linux/x64/release/bundle/batocera_wine_manager.AppImage
+          name: wine_manager.zip
+          path:  build/linux/x64/release/*
       - uses: ncipollo/release-action@v1
         with:
           artifacts: " build/linux/x64/release/bundle/*"
