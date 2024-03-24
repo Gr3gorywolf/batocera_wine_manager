@@ -25,9 +25,13 @@ jobs:
         run: flutter pub get
       - name: Build Linux AppImage
         run: flutter build linux --release
+      - name: Copy run script
+        run: cp scripts/run.sh build/linux/x64/release/bundle/run.sh
+      - name: Copy ports shortcut script
+        run: cp scripts/batocera_wine_manager.sh build/linux/x64/release/bundle/batocera_wine_manager.sh
       - uses: actions/upload-artifact@v3
         with:
-          name: wine_manager.zip
+          name: wine_manager
           path:  build/linux/x64/release/bundle/*
       - uses: ncipollo/release-action@v1
         with:
