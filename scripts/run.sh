@@ -1,0 +1,1 @@
+chmod +x ./batocera_wine_manager && ./batocera_wine_manager
