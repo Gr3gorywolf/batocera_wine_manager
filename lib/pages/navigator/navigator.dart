@@ -1,3 +1,4 @@
+import 'package:batocera_wine_manager/helpers/file_system_helper.dart';
 import 'package:batocera_wine_manager/pages/config/config.dart';
 import 'package:batocera_wine_manager/pages/downloads/downloads.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,13 @@ class NavigatorPage extends StatefulWidget {
 }
 
 class _NavigatorPageState extends State<NavigatorPage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    FileSystemHelper.init();
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(

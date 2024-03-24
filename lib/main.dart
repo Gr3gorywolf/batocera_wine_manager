@@ -1,15 +1,17 @@
+import 'package:batocera_wine_manager/get_controllers/download_controller.dart';
 import 'package:batocera_wine_manager/pages/downloads/downloads.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import 'pages/navigator/navigator.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+  MyApp({super.key});
+  DownloadController downloadsController = Get.put(DownloadController());
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {

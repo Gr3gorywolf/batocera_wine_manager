@@ -16,7 +16,7 @@ class GithubRelease {
   String? createdAt;
   String? publishedAt;
   _Author? author;
-  List<_Assets>? assets;
+  List<GithubReleaseAsset>? assets;
 
   GithubRelease(
       {this.url,
@@ -58,9 +58,9 @@ class GithubRelease {
     author =
         json['author'] != null ? new _Author.fromJson(json['author']) : null;
     if (json['assets'] != null) {
-      assets = <_Assets>[];
+      assets = <GithubReleaseAsset>[];
       json['assets'].forEach((v) {
-        assets!.add(new _Assets.fromJson(v));
+        assets!.add(new GithubReleaseAsset.fromJson(v));
       });
     }
   }
@@ -178,7 +178,7 @@ class _Author {
   }
 }
 
-class _Assets {
+class GithubReleaseAsset {
   String? url;
   String? browserDownloadUrl;
   int? id;
@@ -193,7 +193,7 @@ class _Assets {
   String? updatedAt;
   _Author? uploader;
 
-  _Assets(
+  GithubReleaseAsset(
       {this.url,
       this.browserDownloadUrl,
       this.id,
@@ -208,7 +208,7 @@ class _Assets {
       this.updatedAt,
       this.uploader});
 
-  _Assets.fromJson(Map<String, dynamic> json) {
+  GithubReleaseAsset.fromJson(Map<String, dynamic> json) {
     url = json['url'];
     browserDownloadUrl = json['browser_download_url'];
     id = json['id'];

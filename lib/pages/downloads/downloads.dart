@@ -1,6 +1,8 @@
+import 'package:batocera_wine_manager/constants/urls.dart';
 import 'package:batocera_wine_manager/helpers/common_helpers.dart';
 import 'package:batocera_wine_manager/helpers/download_helper.dart';
 import 'package:batocera_wine_manager/models/github_release.dart';
+import 'package:batocera_wine_manager/widget/DownloadIconButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -23,7 +25,7 @@ class _DownloadsPageState extends State<DownloadsPage> {
     fetchReleases();
   }
 
-  getReleaseDownloadAsset(GithubRelease release) {
+  GithubReleaseAsset? getReleaseDownloadAsset(GithubRelease release) {
     var releaseAssets = release.assets;
     if (releaseAssets != null && releaseAssets.isNotEmpty) {
       return release.assets?.last;
@@ -55,15 +57,17 @@ class _DownloadsPageState extends State<DownloadsPage> {
         children: [
           ListTile(title: Text("Redistributables", style: titleTextStyle)),
           ListTile(
-              title: Text(
-                "Download redistributables",
-              ),
-              subtitle: Text(
-                  "Those redistributables will allow you to install all the needed dependencies in the wine application's folder"),
-              trailing: IconButton(
-                onPressed: () => {},
-                icon: Icon(Icons.download),
-              )),
+            title: Text(
+              "Download redistributables",
+            ),
+            subtitle: Text(
+                "Those redistributables will allow you to install all the needed dependencies in the wine application's folder"),
+            trailing: DownloadIconButton(
+                downloadLink: REDIST_DOWNLOAD_LINK,
+                onPress: () {
+                  DownloadHelper().downloadRedist();
+                }),
+          ),
           ListTile(title: Text("Proton versions", style: titleTextStyle)),
           ...isFetchingReleases
               ? [
@@ -71,8 +75,9 @@ class _DownloadsPageState extends State<DownloadsPage> {
                     child: CircularProgressIndicator(),
                   )
                 ]
-              : protonReleases.map(
-                  (release) => Column(
+              : protonReleases.map((release) {
+                  var releaseDownloadAsset = getReleaseDownloadAsset(release);
+                  return Column(
                     children: [
                       ListTile(
                           title: Text(
@@ -80,18 +85,23 @@ class _DownloadsPageState extends State<DownloadsPage> {
                           ),
                           subtitle: Text(
                             CommonHelpers.formatBytes(
-                                    getReleaseDownloadAsset(release)?.size ?? 0,
-                                    1) +
+                                    releaseDownloadAsset?.size ?? 0, 1) +
                                 " - Not installed",
                           ),
-                          trailing: IconButton(
-                            onPressed: () => {},
-                            icon: Icon(Icons.download),
-                          )),
+                          trailing: DownloadIconButton(
+                              downloadLink:
+                                  releaseDownloadAsset?.browserDownloadUrl ??
+                                      '',
+                              onPress: () {
+                                DownloadHelper().downloadProton(
+                                  releaseDownloadAsset?.browserDownloadUrl ??
+                                      '',
+                                );
+                              })),
                       Divider()
                     ],
-                  ),
-                )
+                  );
+                })
         ],
       ),
     ));

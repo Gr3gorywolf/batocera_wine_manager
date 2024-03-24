@@ -13,7 +13,11 @@ class CommonHelpers {
   static String getFileNameFromUrl(String url) {
     Uri uri = Uri.parse(url);
     String path = uri.path;
-    List<String> segments = path.split('/');
-    return segments.last;
+    List<String> pathSegments = path.split('/');
+    String filenameWithExtension = pathSegments.last;
+    List<String> filenameSegments = filenameWithExtension.split(r'\');
+    String filename = filenameSegments.last;
+
+    return filename;
   }
 }
