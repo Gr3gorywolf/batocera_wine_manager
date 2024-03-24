@@ -20,13 +20,14 @@ jobs:
           flutter-version: '3.3.5'
           channel: 'stable' # or: 'beta' or 'dev'
       - name: Install dependencies
+        run: flutter config --enable-linux-desktop
         run: flutter pub get
       - name: Build Linux AppImage
         run: flutter build linux --release
       - uses: actions/upload-artifact@v3
         with:
           name: wine_manager.zip
-          path:  build/linux/x64/release/*
+          path:  build/linux/x64/release/bundle/*
       - uses: ncipollo/release-action@v1
         with:
           artifacts: " build/linux/x64/release/bundle/*"
