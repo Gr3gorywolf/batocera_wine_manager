@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Setup Ninja build
+        run: apt install ninja-build
       - name: Setup Flutter
         uses: subosito/flutter-action@v1
         with:
