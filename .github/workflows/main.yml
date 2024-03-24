@@ -12,8 +12,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Setup Ninja build
-        run: sudo apt install ninja-build
+      - name: Install dependencies
+        run: sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
       - name: Setup Flutter
         uses: subosito/flutter-action@v1
         with:
@@ -21,6 +21,10 @@ jobs:
           channel: 'stable' # or: 'beta' or 'dev'
       - name: Install dependencies
         run: flutter pub get
+      - name: Generate intermediates
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+      - name: Enable linux build
+        run: flutter config --enable-linux-desktop
       - name: Build Linux AppImage
         run: flutter build linux --release
       - uses: actions/upload-artifact@v3
