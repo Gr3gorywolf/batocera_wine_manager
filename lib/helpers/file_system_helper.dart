@@ -115,7 +115,9 @@ class FileSystemHelper {
 
   static Future<bool> overrideWineVersion(String wineFile) async {
     try {
-      var symLink = Link('$wineFile/files');
+      var symLink = Link(
+        '$wineFile/files',
+      );
       if (symLink.existsSync()) {
         await symLink.delete();
       }

@@ -23,9 +23,6 @@ jobs:
         run: flutter config --enable-linux-desktop
       - name: Install dependencies
         run: flutter pub get
-      - name: Configure linux runner
-
-      run: flutter pub get
       - name: Build Linux AppImage
         run: flutter build linux --release
       - uses: actions/upload-artifact@v3
