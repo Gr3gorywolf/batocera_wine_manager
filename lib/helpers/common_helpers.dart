@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 class CommonHelpers {
@@ -19,5 +20,20 @@ class CommonHelpers {
     String filename = filenameSegments.last;
 
     return filename;
+  }
+
+  static Future<void> copyDirectory(
+      String sourcePath, String destinationPath) async {
+    await Directory(destinationPath).create(recursive: true);
+    List<FileSystemEntity> contents = Directory(sourcePath).listSync();
+    for (var entity in contents) {
+      String newPath =
+          '$destinationPath/${entity.path.split(Platform.pathSeparator).last}';
+      if (entity is File) {
+        await (entity as File).copy(newPath);
+      } else if (entity is Directory) {
+        await copyDirectory(entity.path, newPath);
+      }
+    }
   }
 }

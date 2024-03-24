@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:batocera_wine_manager/get_controllers/download_controller.dart';
+import 'package:batocera_wine_manager/helpers/common_helpers.dart';
 import 'package:batocera_wine_manager/models/download.dart';
 import 'package:get/get.dart';
 
@@ -8,7 +9,7 @@ import '../constants/paths.dart';
 
 class FileSystemHelper {
   static get wineOverrideFilePath {
-    return WINE_PATH + '_wine-override';
+    return '$WINE_PATH/_wine-override';
   }
 
   static Directory? get redistDirectory {
@@ -103,9 +104,9 @@ class FileSystemHelper {
   }
 
   static disableWineOverride() async {
-    var symLink = Link(PROTON_OVERRIDE_PATH);
-    if (symLink.existsSync()) {
-      await symLink.delete();
+    var protonOverridePath = Directory(PROTON_OVERRIDE_PATH);
+    if (protonOverridePath.existsSync()) {
+      await protonOverridePath.delete(recursive: true);
       var regFile = File(wineOverrideFilePath);
       if (regFile.existsSync()) {
         regFile.deleteSync();
@@ -115,13 +116,8 @@ class FileSystemHelper {
 
   static Future<bool> overrideWineVersion(String wineFile) async {
     try {
-      var symLink = Link(
-        '$wineFile/files',
-      );
-      if (symLink.existsSync()) {
-        await symLink.delete();
-      }
-      await symLink.create(PROTON_OVERRIDE_PATH);
+      await CommonHelpers.copyDirectory(
+          "$wineFile/files", PROTON_OVERRIDE_PATH);
       var regFile = File(wineOverrideFilePath);
       regFile.writeAsString(wineFile);
       return true;

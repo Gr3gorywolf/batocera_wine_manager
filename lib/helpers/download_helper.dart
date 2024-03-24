@@ -11,12 +11,32 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 
 class DownloadHelper {
-  Future<List<GithubRelease>?> fetchProtonReleases() async {
+  static List<GithubRelease> _catchedReleases = [];
+  Future<List<GithubRelease>?> fetchProtonReleases(
+      {int maxPages = 4,
+      int page = 1,
+      List<GithubRelease>? initialReleases}) async {
+    if (DownloadHelper._catchedReleases.isNotEmpty) {
+      return DownloadHelper._catchedReleases;
+    }
     try {
       var res = await Dio().get(
-          "https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases?page=2");
+          "https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases?page=$page");
       List<dynamic> resData = res.data;
-      return resData.map((release) => GithubRelease.fromJson(release)).toList();
+      var releases =
+          resData.map((release) => GithubRelease.fromJson(release)).toList();
+      if (initialReleases != null) {
+        releases = [
+          ...initialReleases,
+          ...releases,
+        ];
+      }
+      if (page < maxPages) {
+        return await fetchProtonReleases(
+            maxPages: maxPages, initialReleases: releases, page: page + 1);
+      }
+      DownloadHelper._catchedReleases = releases;
+      return releases;
     } catch (err) {
       return null;
     }

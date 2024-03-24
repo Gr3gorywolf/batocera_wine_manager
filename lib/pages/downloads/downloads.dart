@@ -3,6 +3,7 @@ import 'package:batocera_wine_manager/constants/urls.dart';
 import 'package:batocera_wine_manager/helpers/common_helpers.dart';
 import 'package:batocera_wine_manager/helpers/download_helper.dart';
 import 'package:batocera_wine_manager/helpers/file_system_helper.dart';
+import 'package:batocera_wine_manager/helpers/ui_helpers.dart';
 import 'package:batocera_wine_manager/models/download.dart';
 import 'package:batocera_wine_manager/models/github_release.dart';
 import 'package:batocera_wine_manager/pages/downloads/proton_list_item.dart';
@@ -81,7 +82,15 @@ class _DownloadsPageState extends State<DownloadsPage> {
     });
   }
 
+  handleDisableProtonOverride() async {
+    await FileSystemHelper.disableWineOverride();
+    setState(() {
+      activeProtonName = null;
+    });
+  }
+
   handleOverrideProton(Download protonDownload) async {
+    UiHelpers().showLoaderDialog(context, text: "Setting up proton...");
     var overrideSucced =
         await FileSystemHelper.overrideWineVersion(protonDownload.fileName);
     if (overrideSucced) {
@@ -89,6 +98,7 @@ class _DownloadsPageState extends State<DownloadsPage> {
         activeProtonName = Uri.parse(protonDownload.fileName).pathSegments.last;
       });
     }
+    Navigator.pop(context);
   }
 
   @override
@@ -130,6 +140,36 @@ class _DownloadsPageState extends State<DownloadsPage> {
                 }),
           ),
           ListTile(title: Text("Proton versions", style: titleTextStyle)),
+          ListTile(
+            leading: IconButton(
+              onPressed: null,
+              icon: Icon(Icons.download, color: Colors.green),
+            ),
+            title: Text(
+              "Proton default",
+            ),
+            subtitle: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "The batocera's default wine version",
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: ElevatedButton(
+                    onPressed: activeProtonName == null
+                        ? null
+                        : () => handleDisableProtonOverride(),
+                    child: Text(activeProtonName == null
+                        ? "On use"
+                        : "Use this proton"),
+                  ),
+                )
+              ],
+            ),
+          ),
+          Divider(),
           ...isFetchingReleases
               ? [
                   Center(
