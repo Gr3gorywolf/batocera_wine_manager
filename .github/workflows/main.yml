@@ -19,8 +19,9 @@ jobs:
         with:
           flutter-version: '3.3.5'
           channel: 'stable' # or: 'beta' or 'dev'
-      - name: Install dependencies
+      - name: Enable linux desktop
         run: flutter config --enable-linux-desktop
+      - name: Install dependencies
         run: flutter pub get
       - name: Build Linux AppImage
         run: flutter build linux --release
