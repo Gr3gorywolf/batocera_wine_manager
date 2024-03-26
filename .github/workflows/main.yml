@@ -30,7 +30,7 @@ jobs:
       - name: Copy ports shortcut script
         run: cp scripts/batocera_wine_manager.sh build/linux/x64/release/bundle/batocera_wine_manager.sh
       - name: zip the bundle 
-        run: zip - r batocera_wine_manager.zip build/linux/x64/release/bundle
+        run: zip -r batocera_wine_manager.zip build/linux/x64/release/bundle
       - uses: actions/upload-artifact@v3
         with:
           name: wine_manager.tar
