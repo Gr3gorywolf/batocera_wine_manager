@@ -29,11 +29,13 @@ jobs:
         run: cp scripts/run.sh build/linux/x64/release/bundle/run.sh
       - name: Copy ports shortcut script
         run: cp scripts/batocera_wine_manager.sh build/linux/x64/release/bundle/batocera_wine_manager.sh
+      - name: zip the bundle 
+        run: zip - r batocera_wine_manager.zip build/linux/x64/release/bundle
       - uses: actions/upload-artifact@v3
         with:
           name: wine_manager.tar
-          path:  build/linux/x64/release/bundle/*
+          path: batocera_wine_manager.zip
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "wine_manager.tar"
+          artifacts: "batocera_wine_manager.zip"
           tag: v1.0.0-${{ github.run_number }}
