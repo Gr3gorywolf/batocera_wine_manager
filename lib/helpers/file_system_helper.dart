@@ -12,6 +12,11 @@ class FileSystemHelper {
     return '$WINE_PATH/_wine-override';
   }
 
+  static String wineProtonFolderName = "ge-custom";
+  static String get protonOverridePath {
+    return "$WINE_PATH/$wineProtonFolderName";
+  }
+
   static Directory? get redistDirectory {
     var redistDirectories = [
       Directory(REDIST_PATH),
@@ -34,6 +39,10 @@ class FileSystemHelper {
       if (!currentDirectory.existsSync()) {
         await currentDirectory.create(recursive: true);
       }
+    }
+    //Sets the old proton folder for batocera version < 39
+    if (Directory('/usr/wine/proton').existsSync()) {
+      wineProtonFolderName = 'proton';
     }
 
     //Check for the downloaded protons
@@ -134,9 +143,9 @@ class FileSystemHelper {
   }
 
   static disableWineOverride() async {
-    var protonOverridePath = Directory(PROTON_OVERRIDE_PATH);
-    if (protonOverridePath.existsSync()) {
-      await protonOverridePath.delete(recursive: true);
+    var protonOverrideDir = Directory(protonOverridePath);
+    if (protonOverrideDir.existsSync()) {
+      await protonOverrideDir.delete(recursive: true);
       var regFile = File(wineOverrideFilePath);
       if (regFile.existsSync()) {
         regFile.deleteSync();
@@ -162,13 +171,11 @@ class FileSystemHelper {
 
   static Future<bool> overrideWineVersion(String wineFile) async {
     try {
-      await CommonHelpers.copyDirectory(
-          "$wineFile/files", PROTON_OVERRIDE_PATH);
+      await CommonHelpers.copyDirectory("$wineFile/files", protonOverridePath);
       var regFile = File(wineOverrideFilePath);
       regFile.writeAsString(wineFile);
       return true;
     } catch (err) {
-      print(err);
       return false;
     }
   }
