@@ -45,7 +45,7 @@ class FileSystemHelper {
         if (logFile.existsSync()) {
           var downloadUrl = logFile.readAsStringSync();
           downloadController.setDownload(Download(
-              fileName: fsEntity.path,
+              filePath: fsEntity.path,
               progress: 0,
               url: downloadUrl,
               status: DownloadStatus.downloaded));
@@ -61,7 +61,7 @@ class FileSystemHelper {
       if (logFile.existsSync()) {
         var downloadUrl = logFile.readAsStringSync();
         downloadController.setDownload(Download(
-            fileName: redistDir.path,
+            filePath: redistDir.path,
             progress: 0,
             url: downloadUrl,
             status: DownloadStatus.downloaded));
@@ -111,6 +111,22 @@ class FileSystemHelper {
       if (regFile.existsSync()) {
         regFile.deleteSync();
       }
+    }
+  }
+
+  static Future<bool> deleteProton(String wineFile) async {
+    try {
+      var protonDir = Directory(wineFile);
+      await protonDir.delete(recursive: true);
+      var regFile = File(wineOverrideFilePath);
+      if (regFile.existsSync()) {
+        if (regFile.readAsStringSync() == wineFile) {
+          await disableWineOverride();
+        }
+      }
+      return true;
+    } catch (err) {
+      return false;
     }
   }
 

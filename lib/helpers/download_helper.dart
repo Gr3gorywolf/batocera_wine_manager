@@ -51,7 +51,7 @@ class DownloadHelper {
     DownloadController downloadController = Get.find();
     var outputFolder = folderToUncompress ?? fileUrl;
     downloadController.setDownload(Download(
-        fileName: fileUrl, url: url, status: DownloadStatus.downloading));
+        filePath: fileUrl, url: url, status: DownloadStatus.downloading));
     try {
       var res = await Dio().download(url, fileUrl,
           onReceiveProgress: (received, total) async {
@@ -77,16 +77,9 @@ class DownloadHelper {
         var logFile = File(logFileUrl);
         logFile.writeAsStringSync(url);
         downloadController.setDownload(Download(
-            fileName: path.dirname(logFileUrl),
+            filePath: path.dirname(logFileUrl),
             url: url,
-            status: DownloadStatus.downloading));
-      } else {
-        print("Failed to uncompress");
-        print(result.stdout);
-        print(fileUrl);
-        print(outputFolder);
-        downloadController.setDownloadStatus(url, DownloadStatus.none);
-        return false;
+            status: DownloadStatus.downloaded));
       }
       return true;
     } catch (err) {
@@ -96,7 +89,7 @@ class DownloadHelper {
     }
   }
 
-  downloadRedist() async {
+  Future<bool> downloadRedist() async {
     DownloadController downloadController = Get.find();
     var fileUrl = path.join(WINE_PATH, 'exe.bak.tar.gz');
     return await _downloadAndUncompress(

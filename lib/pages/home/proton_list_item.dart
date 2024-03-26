@@ -13,11 +13,13 @@ import '../../widget/DownloadIconButton.dart';
 class ProtonListItem extends StatelessWidget {
   bool isActive;
   Function(Download) toggleActive;
+  Function(Download) onRemove;
   GithubRelease protonRelease;
   DownloadController downloadController = Get.find();
   ProtonListItem(
       {required this.isActive,
       required this.toggleActive,
+      required this.onRemove,
       required this.protonRelease,
       super.key});
   GithubReleaseAsset? get releaseDownloadAsset {
@@ -78,12 +80,25 @@ class ProtonListItem extends StatelessWidget {
                     ? [
                         Padding(
                           padding: const EdgeInsets.only(top: 5),
-                          child: ElevatedButton(
-                            onPressed: isActive || currentDownload == null
-                                ? null
-                                : () => toggleActive(currentDownload),
-                            child:
-                                Text(isActive ? "On use" : "Use this proton"),
+                          child: Row(
+                            children: [
+                              ElevatedButton(
+                                onPressed: isActive || currentDownload == null
+                                    ? null
+                                    : () => toggleActive(currentDownload),
+                                child: Text(
+                                    isActive ? "On use" : "Use this proton"),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: ElevatedButton(
+                                  onPressed: currentDownload == null
+                                      ? null
+                                      : () => onRemove(currentDownload),
+                                  child: Text("Delete this proton"),
+                                ),
+                              ),
+                            ],
                           ),
                         )
                       ]

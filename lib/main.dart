@@ -1,9 +1,7 @@
 import 'package:batocera_wine_manager/get_controllers/download_controller.dart';
-import 'package:batocera_wine_manager/pages/downloads/downloads.dart';
+import 'package:batocera_wine_manager/pages/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import 'pages/navigator/navigator.dart';
 
 void main() {
   runApp(MyApp());
@@ -29,7 +27,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.red,
       ),
-      home: NavigatorPage(),
+      home: HomePage(),
     );
   }
 }

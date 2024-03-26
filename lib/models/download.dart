@@ -1,10 +1,14 @@
 enum DownloadStatus { downloading, downloaded, uncompressing, none }
 
 class Download {
-  late String fileName;
+  late String filePath;
   late String url;
   late double progress;
   late DownloadStatus status;
+
+  get fileName {
+    return Uri.parse(filePath).pathSegments.last;
+  }
 
   get isCompleted {
     return status == DownloadStatus.downloaded;
@@ -15,7 +19,7 @@ class Download {
   }
 
   Download(
-      {required this.fileName,
+      {required this.filePath,
       this.progress = 0,
       required this.url,
       this.status = DownloadStatus.none});
