@@ -31,9 +31,9 @@ jobs:
         run: cp scripts/batocera_wine_manager.sh build/linux/x64/release/bundle/batocera_wine_manager.sh
       - uses: actions/upload-artifact@v3
         with:
-          name: wine_manager
+          name: wine_manager.tar
           path:  build/linux/x64/release/bundle/*
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: " build/linux/x64/release/bundle/*"
+          artifacts: "build/linux/x64/release/bundle/*"
           tag: v1.0.0-${{ github.run_number }}

@@ -103,6 +103,36 @@ class FileSystemHelper {
     }
   }
 
+  static bool fastRedistInstallEnabled() {
+    var redistDir = FileSystemHelper.redistDirectory;
+    if (redistDir != null) {
+      return File("${redistDir.path}/STEAMY-AiO.exe.bak").existsSync();
+    }
+    return false;
+  }
+
+  static Future<bool> toggleFastRedistInstall(bool enable) async {
+    var redistDir = FileSystemHelper.redistDirectory;
+    if (redistDir == null) {
+      return false;
+    }
+    var fastRedistEnabled = FileSystemHelper.fastRedistInstallEnabled();
+    try {
+      if (enable && !fastRedistEnabled) {
+        await File("${redistDir.path}/STEAMY-AiO.exe")
+            .rename("${redistDir.path}/STEAMY-AiO.exe.bak");
+      }
+      if (!enable && fastRedistEnabled) {
+        await File("${redistDir.path}/STEAMY-AiO.exe.bak")
+            .rename("${redistDir.path}/STEAMY-AiO.exe");
+      }
+      return enable;
+    } catch (err) {
+      print(err);
+      return false;
+    }
+  }
+
   static disableWineOverride() async {
     var protonOverridePath = Directory(PROTON_OVERRIDE_PATH);
     if (protonOverridePath.existsSync()) {

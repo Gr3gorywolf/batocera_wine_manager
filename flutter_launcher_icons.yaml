@@ -1,0 +1,10 @@
+flutter_icons:
+  image_path: "assets/icons/app-icon.png"
+  windows:
+    generate: true
+    image_path: "assets/icons/app-icon.png"
+    icon_size: 64
+  linux:
+    generate: true
+    image_path: "assets/icons/app-icon.png"
+    icon_size: 64
