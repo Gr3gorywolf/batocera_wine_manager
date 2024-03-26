@@ -35,5 +35,5 @@ jobs:
           path:  build/linux/x64/release/bundle/*
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/linux/x64/release/bundle/*"
+          artifacts: "wine_manager.tar"
           tag: v1.0.0-${{ github.run_number }}
