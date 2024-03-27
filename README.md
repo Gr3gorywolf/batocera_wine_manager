@@ -22,10 +22,12 @@ curl -L cdn.gregoryc.dev/wine-manager | bash
 ```
 
 This script will automatically download and install Batocera Wine Manager on your system.
+## Compatibility
+The Wine manager is compatible and tested with all batocera versions that uses proton, For versions < 39 please set proton as default windows emulator in order to use the correct version
 
 ## Usage
 
-After installation, launch Batocera Wine Manager from the applications menu on your Batocera system. Follow the on-screen instructions to manage Wine Proton and configure settings for your Windows applications and games.
+After installation, launch Batocera Wine Manager from the applications menu on your Batocera system. Follow the on-screen instructions to manage Wine Protons.
 
 ## Redist management
 
