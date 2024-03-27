@@ -18,7 +18,7 @@ echo "Downloading.."
 wget -P "$TEMP_FOLDER" "$BATOCERA_WINE_MANAGER_URL"
 echo "Extracting.."
 # Unzip Batocera Wine Manager to /userdata/system/wine_manager
-if [ -d "$WINE_MANAGER_FOLDER" ]; then
+if [ -f "$WINE_MANAGER_FOLDER" ]; then
     # Folder exists, so delete it
     rm -rf "$WINE_MANAGER_FOLDER"
 fi
