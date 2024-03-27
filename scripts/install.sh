@@ -18,10 +18,7 @@ echo "Downloading.."
 wget -P "$TEMP_FOLDER" "$BATOCERA_WINE_MANAGER_URL"
 echo "Extracting.."
 # Unzip Batocera Wine Manager to /userdata/system/wine_manager
-if [ -f "$WINE_MANAGER_FOLDER" ]; then
-    # Folder exists, so delete it
-    rm -rf "$WINE_MANAGER_FOLDER"
-fi
+rm -rf $WINE_MANAGER_FOLDER
 unzip "$TEMP_FOLDER/batocera_wine_manager.zip" -d "$WINE_MANAGER_FOLDER"
 echo "Installing..."
 # Copy scripts from extracted folder to /userdata/roms/ports
@@ -60,12 +57,16 @@ else
 fi
 
 # Create .desktop file
-echo "[Desktop Entry]
-Name=Batocera Wine Manager
-Exec=/userdata/system/wine_manager/run.sh
-Icon=/userdata/system/wine_manager/data/flutter_assets/assets/icons/app-icon.png
-Type=Application
-Categories=Utility;" > "$TEMP_FOLDER/batocera_wine_manager.desktop"
+shortcut="$TEMP_FOLDER/batocera_wine_manager.desktop"
+rm -rf $shortcut
+echo "[Desktop Entry]" >> $shortcut
+echo "Version=1.0" >> $shortcut
+echo "Icon=/userdata/system/wine_manager/data/flutter_assets/assets/icons/app-icon.png" >> $shortcut
+echo "Exec=/userdata/system/wine_manager/run.sh" >> $shortcut
+echo "Terminal=false" >> $shortcut
+echo "Type=Application" >> $shortcut
+echo "Categories=Game;batocera.linux;" >> $shortcut
+echo "Name=Batocera Wine Manager" >> $shortcut
 
 # Move .desktop file to /usr/share/applications
 mv "$TEMP_FOLDER/batocera_wine_manager.desktop" "$DESKTOP_FOLDER"
