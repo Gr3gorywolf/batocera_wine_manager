@@ -27,8 +27,9 @@ class UpdatesHelper {
   }
 
   updateApp() {
-    Process.run(
-        'xterm', ['-e', "bash /userdata/system/wine_manager/update.sh"]);
-    exit(0);
+    Process.run('xterm', ['-e', "bash /userdata/system/wine_manager/update.sh"])
+        .then((value) {
+      exit(0);
+    });
   }
 }
