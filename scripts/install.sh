@@ -39,10 +39,7 @@ if [ ! -f "$xml_file" ]; then
 </gameList>' > "$xml_file"
     echo "Created new XML file: $xml_file"
 fi
-if grep -q '<name>Wine manager</name>' "$xml_file"; then
-    echo "Entry already exists."
-else
-    xml_entry='
+ xml_entry='
 	<game>
 		<path>./wine_manager.sh</path>
 		<name>Wine manager</name>
@@ -54,8 +51,12 @@ else
 		<lang>en</lang>
 	</game>'
 
-    sed -i '/<\/gameList>/i '"$xml_entry"'' "$xml_file"
+if ! grep -q '<name>Wine manager</name>' "$xml_file"; then
+    # Insert the entry into the XML file
+    awk -v entry="$xml_entry" '/<\/gameList>/ {print entry} 1' "$xml_file" > tmpfile && mv tmpfile "$xml_file"
     echo "Entry added successfully."
+else
+    echo "Entry already exists."
 fi
 
 # Create .desktop file
