@@ -30,8 +30,8 @@ class UpdatesHelper {
     Directory("/userdata/system/temp").createSync(recursive: true);
     File("/userdata/system/wine_manager/update.sh")
         .copySync("/userdata/system/temp/update.sh");
-    Process.run('xterm', ['-e', "bash /userdata/system/temp/update.sh"])
-        .then((value) {
+    Process.start('xterm', ['-e', "bash /userdata/system/temp/update.sh"])
+        .then((val) {
       exit(0);
     });
   }
