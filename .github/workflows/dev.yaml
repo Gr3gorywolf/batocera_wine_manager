@@ -1,0 +1,37 @@
+name: Build Linux AppImage and Create Release
+
+on:
+  push:
+    branches:
+      - dev  # Adjust the branch name as needed
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libglu1-mesa libstdc++-12-dev xz-utils
+      - name: Write build number
+        run: echo "v1.0.0-${{ github.run_number }}"  > $GITHUB_WORKSPACE/assets/data/release-number.txt
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '3.3.5'
+          channel: 'stable' # or: 'beta' or 'dev'
+      - name: Enable linux desktop
+        run: flutter config --enable-linux-desktop
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Build Linux AppImage
+        run: flutter build linux --release
+      - name: Copy scripts
+        run: cp -r scripts/* build/linux/x64/release/bundle
+      - name: zip the bundle
+        run: cd build/linux/x64/release/bundle &&  zip -r batocera_wine_manager.zip *
+      - uses: actions/upload-artifact@v3
+        with:
+          name: batocera_wine_manager
+          path: build/linux/x64/release/bundle/batocera_wine_manager.zip
