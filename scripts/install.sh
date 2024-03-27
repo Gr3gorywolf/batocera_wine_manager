@@ -35,7 +35,7 @@ Type=Application
 Categories=Utility;" > "$TEMP_FOLDER/batocera_wine_manager.desktop"
 
 # Move .desktop file to /usr/share/applications
-sudo mv "$TEMP_FOLDER/batocera_wine_manager.desktop" "$DESKTOP_FOLDER"
+mv "$TEMP_FOLDER/batocera_wine_manager.desktop" "$DESKTOP_FOLDER"
 
 # Clean up temporary files
 rm -rf "$TEMP_FOLDER"
