@@ -14,6 +14,7 @@ import 'package:batocera_wine_manager/pages/home/proton_list_item.dart';
 import 'package:batocera_wine_manager/pages/home/update_banner.dart';
 import 'package:batocera_wine_manager/widget/DownloadIconButton.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
@@ -79,6 +80,23 @@ class _HomePageState extends State<HomePage> {
       return release.assets?.last;
     }
     return null;
+  }
+
+  String? getRedistDownloadStatus() {
+    var redistDownload = downloadController.downloads[REDIST_DOWNLOAD_LINK];
+    if (redistDownload != null) {
+      switch (redistDownload.status) {
+        case DownloadStatus.downloading:
+          return "Downloading: ${redistDownload.progress.round()}%";
+        case DownloadStatus.downloaded:
+          return "Installed";
+        case DownloadStatus.uncompressing:
+          return "Uncompressing";
+        case DownloadStatus.none:
+          break;
+      }
+    }
+    return 'Not installed';
   }
 
   fetchReleases() async {
@@ -157,9 +175,12 @@ class _HomePageState extends State<HomePage> {
     Navigator.pop(context);
   }
 
-  handleShowInfoDialog() {
-    UiHelpers.showAlertDialog(context, "About batocera wine manager",
-        "App created by gr3gorywolf with love to manage wine versions & redistributables on batocera for a optimal windows experience",
+  handleShowInfoDialog() async {
+    var currentRelease = await rootBundle.loadString(
+      "assets/data/release-number.txt",
+    );
+    UiHelpers.showAlertDialog(context, "Batocera wine manager $currentRelease",
+        "App created by gr3gorywolf with ❤️ to manage wine versions & redistributables on batocera for a optimal windows experience",
         buttons: [
           TextButton(
               onPressed: () => {Navigator.pop(context)}, child: Text("Close")),
@@ -202,8 +223,10 @@ class _HomePageState extends State<HomePage> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                          "Those redistributables will allow you to install all the needed dependencies in the wine application's folder"),
+                      Obx(() {
+                        return Text(
+                            "Those redistributables will allow you to install all the needed dependencies in the wine application's folder - ${getRedistDownloadStatus()}");
+                      }),
                       ...redistInstallActive != null
                           ? ([
                               Row(

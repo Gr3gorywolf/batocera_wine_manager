@@ -1,16 +1,44 @@
-# batocera_wine_manager
+# Batocera Wine Manager
 
-A new Flutter project.
+![Batocera Wine Manager Logo](https://github.com/Gr3gorywolf/batocera_wine_manager/blob/main/assets/icons/art.png?raw=true)
 
-## Getting Started
+Batocera Wine Manager is an application designed to manage Wine Proton on the Batocera ecosystem. It simplifies the process of installing, configuring, and managing Wine Proton to run Windows applications and games on Batocera systems improving the batocera windows experience.
 
-This project is a starting point for a Flutter application.
+## Features
 
-A few resources to get you started if this is your first Flutter project:
+- **Easy Installation**: With a simple script, you can quickly set up Batocera Wine Manager on your Batocera system.
+- **User-Friendly Interface**: The application provides a straightforward interface for managing Wine Proton, making it accessible to users of all skill levels.
+- **Wine Proton Management**: You can install, update, and remove Wine Proton versions effortlessly.
+- **Windows redistributables management**: By downloading the redistributables on the app you will be able to activate the redist installation before the game launch
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Installation
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+To install Batocera Wine Manager, run the following command in your Batocera system terminal:
+
+```bash
+curl -L cdn.gregoryc.dev/wine-manager | bash
+```
+
+This script will automatically download and install Batocera Wine Manager on your system.
+
+## Usage
+
+After installation, launch Batocera Wine Manager from the applications menu on your Batocera system. Follow the on-screen instructions to manage Wine Proton and configure settings for your Windows applications and games.
+
+## Redist management
+
+The installation also creates a shortcut on the batocera's "Ports" section and also 2 scripts to enable and disable the redist installation. if the redist installation is on the only thing that gonna run on the wine bottles is the redist installator, you should disable the redist in order to run the game normally
+
+## Support and Contributions
+
+If you encounter any issues or have suggestions for improvements, please [submit an issue](https://github.com/Gr3gorywolf/batocera_wine_manager/issues) on the GitHub repository.
+
+Contributions are welcome! If you'd like to contribute to the development of Batocera Wine Manager, fork the [GitHub repository](https://github.com/Gr3gorywolf/batocera_wine_manager) and submit a pull request.
+
+## License
+
+This application is licensed under the [MIT License](https://github.com/Gr3gorywolf/batocera_wine_manager/blob/main/LICENSE). Feel free to modify and distribute it according to the terms of the license.
+
+---
+
+*Batocera Wine Manager is not affiliated with Batocera or Wine. "Batocera" is a registered trademark of its respective owners.*
