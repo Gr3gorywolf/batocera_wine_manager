@@ -22,7 +22,8 @@ unzip "$TEMP_FOLDER/batocera_wine_manager.zip" -d "$WINE_MANAGER_FOLDER"
 echo "Installing..."
 # Copy scripts from extracted folder to /userdata/roms/ports
 cp  "$WINE_MANAGER_FOLDER/batocera_wine_manager.sh" "$ROMS_PORTS_FOLDER/wine_manager.sh"
-
+cp  "$WINE_MANAGER_FOLDER/enable_redist_install.sh" "$ROMS_PORTS_FOLDER/enable_redist_install.sh"
+cp  "$WINE_MANAGER_FOLDER/disable_redist_install.sh" "$ROMS_PORTS_FOLDER/disable_redist_install.sh"
 # Download image and put it in the specified location
 mkdir -p "$IMAGE_FOLDER"
 cp "$WINE_MANAGER_FOLDER/data/flutter_assets/assets/icons/app-icon.png" "$IMAGE_FOLDER/batocera_wine_manager.png"
