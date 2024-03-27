@@ -7,9 +7,11 @@ import 'package:batocera_wine_manager/helpers/common_helpers.dart';
 import 'package:batocera_wine_manager/helpers/download_helper.dart';
 import 'package:batocera_wine_manager/helpers/file_system_helper.dart';
 import 'package:batocera_wine_manager/helpers/ui_helpers.dart';
+import 'package:batocera_wine_manager/helpers/updates_helper.dart';
 import 'package:batocera_wine_manager/models/download.dart';
 import 'package:batocera_wine_manager/models/github_release.dart';
 import 'package:batocera_wine_manager/pages/home/proton_list_item.dart';
+import 'package:batocera_wine_manager/pages/home/update_banner.dart';
 import 'package:batocera_wine_manager/widget/DownloadIconButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -30,6 +32,7 @@ class _HomePageState extends State<HomePage> {
   var titleTextStyle = TextStyle(fontSize: 20, color: Colors.red);
   DownloadController downloadController = Get.find();
   bool? redistInstallActive = null;
+  GithubRelease? newUpdate = null;
   bool fastRedistInstallActive = false;
   String? activeProtonName = null;
   @override
@@ -37,9 +40,19 @@ class _HomePageState extends State<HomePage> {
     // TODO: implement initState
     super.initState();
     FileSystemHelper.init();
+    initializeNewUpdate();
     fetchReleases();
     initializeActiveProton();
     initializeRedist();
+  }
+
+  initializeNewUpdate() async {
+    var update = await UpdatesHelper().fetchNewRelease();
+    if (update != null) {
+      setState(() {
+        newUpdate = update;
+      });
+    }
   }
 
   initializeRedist() async {
@@ -124,6 +137,10 @@ class _HomePageState extends State<HomePage> {
     Navigator.pop(context);
   }
 
+  handleUpdate() {
+    UpdatesHelper().updateApp();
+  }
+
   handleRemoveProton(Download protonDownload) async {
     UiHelpers().showLoaderDialog(context, text: "Removing proton...");
     var deleteSucceed =
@@ -169,6 +186,12 @@ class _HomePageState extends State<HomePage> {
           child: Focus(
             child: Column(
               children: [
+                ...newUpdate != null
+                    ? [
+                        UpdateBanner(
+                            release: newUpdate, onUpdate: () => handleUpdate())
+                      ]
+                    : [],
                 ListTile(
                     title: Text("Redistributables", style: titleTextStyle)),
                 ListTile(
