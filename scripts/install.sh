@@ -32,9 +32,13 @@ cp  "$WINE_MANAGER_FOLDER/disable_redist_install.sh" "$ROMS_PORTS_FOLDER/disable
 mkdir -p "$IMAGE_FOLDER"
 cp "$WINE_MANAGER_FOLDER/data/flutter_assets/assets/icons/app-icon.png" "$IMAGE_FOLDER/batocera_wine_manager.png"
 
-
-
 # inserts the batocera wine shortcut to the corresponding path
+if [ ! -f "$xml_file" ]; then
+    echo '<?xml version="1.0"?>
+<gameList>
+</gameList>' > "$xml_file"
+    echo "Created new XML file: $xml_file"
+fi
 if grep -q '<name>Wine manager</name>' "$xml_file"; then
     echo "Entry already exists."
 else
