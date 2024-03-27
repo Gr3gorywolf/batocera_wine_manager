@@ -18,6 +18,10 @@ echo "Downloading.."
 wget -P "$TEMP_FOLDER" "$BATOCERA_WINE_MANAGER_URL"
 echo "Extracting.."
 # Unzip Batocera Wine Manager to /userdata/system/wine_manager
+if [ -d "$WINE_MANAGER_FOLDER" ]; then
+    # Folder exists, so delete it
+    rm -rf "$WINE_MANAGER_FOLDER"
+fi
 unzip "$TEMP_FOLDER/batocera_wine_manager.zip" -d "$WINE_MANAGER_FOLDER"
 echo "Installing..."
 # Copy scripts from extracted folder to /userdata/roms/ports
