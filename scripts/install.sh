@@ -10,6 +10,7 @@ ROMS_PORTS_FOLDER="/userdata/roms/ports"
 IMAGE_FOLDER="$ROMS_PORTS_FOLDER/images"
 DESKTOP_FOLDER="/usr/share/applications"
 xml_file="/userdata/roms/ports/gamelist.xml"
+WINE_MANAGER_EXEC="/userdata/system/wine_manager/batocera_wine_manager"
 echo "Initiallizing install"
 # Create temporary folder if it doesn't exist
 mkdir -p "$TEMP_FOLDER"
@@ -21,6 +22,7 @@ echo "Extracting.."
 rm -rf $WINE_MANAGER_FOLDER
 unzip "$TEMP_FOLDER/batocera_wine_manager.zip" -d "$WINE_MANAGER_FOLDER"
 echo "Installing..."
+chmod +x $WINE_MANAGER_EXEC
 # Copy scripts from extracted folder to /userdata/roms/ports
 cp  "$WINE_MANAGER_FOLDER/batocera_wine_manager.sh" "$ROMS_PORTS_FOLDER/wine_manager.sh"
 cp  "$WINE_MANAGER_FOLDER/enable_redist_install.sh" "$ROMS_PORTS_FOLDER/enable_redist_install.sh"
@@ -62,7 +64,7 @@ rm -rf $shortcut
 echo "[Desktop Entry]" >> $shortcut
 echo "Version=1.0" >> $shortcut
 echo "Icon=/userdata/system/wine_manager/data/flutter_assets/assets/icons/app-icon.png" >> $shortcut
-echo "Exec=/userdata/system/wine_manager/run.sh" >> $shortcut
+echo "Exec=$WINE_MANAGER_EXEC" >> $shortcut
 echo "Terminal=false" >> $shortcut
 echo "Type=Application" >> $shortcut
 echo "Categories=Game;batocera.linux;" >> $shortcut
