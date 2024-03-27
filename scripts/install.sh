@@ -36,7 +36,7 @@ if grep -q '<name>Wine manager</name>' "$xml_file"; then
 else
     xml_entry='
 	<game>
-		<path>./batocera_wine_manager.sh</path>
+		<path>./wine_manager.sh</path>
 		<name>Wine manager</name>
         <desc>Manage the batocera proton wine versions</desc>
 		<rating>0</rating>
