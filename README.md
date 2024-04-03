@@ -5,7 +5,11 @@
 </p>
 
 Batocera Wine Manager is an application designed to manage Wine Proton on the Batocera ecosystem. It simplifies the process of installing, configuring, and managing Wine Proton to run Windows applications and games on Batocera systems improving the batocera windows experience.
-
+<br/>
+<br/>
+[![Github All Releases](https://img.shields.io/github/downloads/Gr3gorywolf/batocera_wine_manager/total.svg)]()
+![GitHub last commit](https://img.shields.io/github/last-commit/Gr3gorywolf/batocera_wine_manager)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Gr3gorywolf/batocera_wine_manager?label=latest%20release)
 ## Features
 
 - **Easy Installation**: With a simple script, you can quickly set up Batocera Wine Manager on your Batocera system.
