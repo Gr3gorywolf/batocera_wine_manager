@@ -19,7 +19,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v1
         with:
-          flutter-version: '3.3.5'
+          flutter-version: '3.19.5'
           channel: 'stable' # or: 'beta' or 'dev'
       - name: Enable linux desktop
         run: flutter config --enable-linux-desktop
