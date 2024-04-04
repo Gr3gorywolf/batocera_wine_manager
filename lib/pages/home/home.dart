@@ -4,6 +4,7 @@ import 'package:batocera_wine_manager/constants/urls.dart';
 import 'package:batocera_wine_manager/get_controllers/download_controller.dart';
 import 'package:batocera_wine_manager/helpers/download_helper.dart';
 import 'package:batocera_wine_manager/helpers/file_system_helper.dart';
+import 'package:batocera_wine_manager/helpers/gamepads_helper.dart';
 import 'package:batocera_wine_manager/helpers/ui_helpers.dart';
 import 'package:batocera_wine_manager/helpers/updates_helper.dart';
 import 'package:batocera_wine_manager/models/download.dart';
@@ -13,6 +14,7 @@ import 'package:batocera_wine_manager/pages/home/update_banner.dart';
 import 'package:batocera_wine_manager/widget/DownloadIconButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gamepads/gamepads.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -41,6 +43,11 @@ class _HomePageState extends State<HomePage> {
     fetchReleases();
     initializeActiveProton();
     initializeRedist();
+    initializeControls();
+  }
+
+  initializeControls() async {
+    GamepadsHelper.init(context);
   }
 
   initializeNewUpdate() async {
@@ -179,7 +186,8 @@ class _HomePageState extends State<HomePage> {
         "App created by gr3gorywolf with ❤️ to manage wine versions & redistributables on batocera for a optimal windows experience",
         buttons: [
           TextButton(
-              onPressed: () => {Navigator.pop(context)}, child: const Text("Close")),
+              onPressed: () => {Navigator.pop(context)},
+              child: const Text("Close")),
           TextButton(
               onPressed: () => {
                     launchUrl(Uri.parse(
@@ -195,12 +203,15 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
           title: const Text("Batocera wine manager"),
           actions: [
-            IconButton(onPressed: handleShowInfoDialog, icon: const Icon(Icons.info)),
-            IconButton(onPressed: () => {exit(0)}, icon: const Icon(Icons.close))
+            IconButton(
+                onPressed: handleShowInfoDialog, icon: const Icon(Icons.info)),
+            IconButton(
+                onPressed: () => {exit(0)}, icon: const Icon(Icons.close))
           ],
         ),
         body: SingleChildScrollView(
           child: Focus(
+            descendantsAreFocusable: true,
             child: Column(
               children: [
                 ...newUpdate != null
