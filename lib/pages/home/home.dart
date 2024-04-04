@@ -14,7 +14,6 @@ import 'package:batocera_wine_manager/pages/home/update_banner.dart';
 import 'package:batocera_wine_manager/widget/DownloadIconButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gamepads/gamepads.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 

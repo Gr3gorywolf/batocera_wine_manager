@@ -1,46 +1,42 @@
+import 'dart:convert';
 import 'dart:io';
-
-import 'package:batocera_wine_manager/helpers/gamepad_map.dart';
+import 'package:batocera_wine_manager/models/joystick_event.dart';
 import 'package:flutter/material.dart';
-import 'package:gamepads/gamepads.dart';
-
-const _joystickAxisMaxValueLinux = 32767;
 
 class GamepadsHelper {
-  static late GamepadController _gamepadController;
   static init(BuildContext context) async {
-    Gamepads.events.listen((ev) => _handleGamepadEvent(ev, context));
+    var proc = await Process.start('jstest', ['--nonblock', '/dev/input/js0']);
+    proc.stdout.transform(utf8.decoder).listen((String data) {
+      // Handle stdout data here
+      _handleGamepadEvent(JoystickEvent.fromString(data), context);
+    });
   }
 
-  static void _handleGamepadEvent(GamepadEvent event, BuildContext context) {
-    print(event.key);
+  static void _handleGamepadEvent(JoystickEvent event, BuildContext context) {
+    print("${event.getTypeName()} ${event.number} ${event.value}");
     // Extract the necessary information from the event to manage focus
-    if (event.type == KeyType.button && event.value > 0) {
-      if (aButton.matches(event)) {
-        print("a button pressed");
-      }
-
-      if (bButton.matches(event)) {
-        print("b button pressed");
-      }
+    if (event.isButton()) {
+      print("button pressed");
       // if (event.key == GamepadButton.a && event.event == ButtonEvent.down) {
       //   // Perform action when A button is pressed
       //   // For example, you can simulate a tap event to trigger the focused element
       //   // or navigate to a new screen
       // }
-    } else if (event.type == KeyType.analog) {
+    } else if (event.isStick()) {
       // Interpret the axis event to determine focus changes
 
       var sensibility = 0.7;
-      var intensity = GamepadAnalogAxis.normalizedIntensity(event);
-      if (intensity > sensibility) {
-        if (leftXAxis.matches(event)) {
-          print("left x axis  ${intensity}");
-        }
-
-        if (leftYAxis.matches(event)) {
-          print("left y axis ${intensity}");
-        }
+      if (event.isStickRight()) {
+        print("right stick");
+      }
+      if (event.isStickLeft()) {
+        print("left stick");
+      }
+      if (event.isStickUp()) {
+        print("up stick");
+      }
+      if (event.isStickDown()) {
+        print("down stick");
       }
     }
   }
