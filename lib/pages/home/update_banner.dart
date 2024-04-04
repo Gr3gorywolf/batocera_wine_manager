@@ -1,5 +1,7 @@
 import 'package:batocera_wine_manager/models/github_release.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/container.dart';
+import 'package:flutter/src/widgets/framework.dart';
 
 class UpdateBanner extends StatelessWidget {
   late GithubRelease? release;
@@ -11,27 +13,27 @@ class UpdateBanner extends StatelessWidget {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 60,
-      padding: const EdgeInsets.only(left: 10, right: 10),
+      padding: EdgeInsets.only(left: 10, right: 10),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         children: [
-          const Icon(
+          Icon(
             Icons.update,
             color: Colors.red,
           ),
-          const SizedBox(
+          SizedBox(
             width: 10,
           ),
           Text(
             "There's a new update available: ${release?.name}",
-            style: const TextStyle(color: Colors.red),
+            style: TextStyle(color: Colors.red),
           ),
-          const SizedBox(
+          SizedBox(
             width: 10,
           ),
           TextButton(
             onPressed: () => onUpdate(),
-            child: const Text("Update now"),
+            child: Text("Update now"),
           )
         ],
       ),

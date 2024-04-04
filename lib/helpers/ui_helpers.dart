@@ -21,10 +21,10 @@ class UiHelpers {
 
   showLoaderDialog(BuildContext context, {String text = "Loading..."}) {
     AlertDialog alert = AlertDialog(
-      content: Row(
+      content: new Row(
         children: [
-          const CircularProgressIndicator(),
-          Container(margin: const EdgeInsets.only(left: 7), child: Text(text)),
+          CircularProgressIndicator(),
+          Container(margin: EdgeInsets.only(left: 7), child: Text(text)),
         ],
       ),
     );

@@ -16,7 +16,7 @@ class DownloadIconButton extends StatelessWidget {
     return Obx(() {
       var download = downloadController.downloads[downloadLink];
       var hasNoneStatus =
-          download == null || download.status == DownloadStatus.none;
+          download == null || download?.status == DownloadStatus.none;
       return IconButton(
         onPressed: hasNoneStatus ? () => onPress() : null,
         icon: [DownloadStatus.none, DownloadStatus.downloaded, null]
