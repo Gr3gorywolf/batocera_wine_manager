@@ -1,9 +1,7 @@
 import 'dart:io';
 
-import 'package:batocera_wine_manager/constants/paths.dart';
 import 'package:batocera_wine_manager/constants/urls.dart';
 import 'package:batocera_wine_manager/get_controllers/download_controller.dart';
-import 'package:batocera_wine_manager/helpers/common_helpers.dart';
 import 'package:batocera_wine_manager/helpers/download_helper.dart';
 import 'package:batocera_wine_manager/helpers/file_system_helper.dart';
 import 'package:batocera_wine_manager/helpers/ui_helpers.dart';
@@ -15,8 +13,6 @@ import 'package:batocera_wine_manager/pages/home/update_banner.dart';
 import 'package:batocera_wine_manager/widget/DownloadIconButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -30,12 +26,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<GithubRelease> protonReleases = [];
   var isFetchingReleases = false;
-  var titleTextStyle = TextStyle(fontSize: 20, color: Colors.red);
+  var titleTextStyle = const TextStyle(fontSize: 20, color: Colors.red);
   DownloadController downloadController = Get.find();
-  bool? redistInstallActive = null;
-  GithubRelease? newUpdate = null;
+  bool? redistInstallActive;
+  GithubRelease? newUpdate;
   bool fastRedistInstallActive = false;
-  String? activeProtonName = null;
+  String? activeProtonName;
   @override
   void initState() {
     // TODO: implement initState
@@ -183,13 +179,13 @@ class _HomePageState extends State<HomePage> {
         "App created by gr3gorywolf with ❤️ to manage wine versions & redistributables on batocera for a optimal windows experience",
         buttons: [
           TextButton(
-              onPressed: () => {Navigator.pop(context)}, child: Text("Close")),
+              onPressed: () => {Navigator.pop(context)}, child: const Text("Close")),
           TextButton(
               onPressed: () => {
                     launchUrl(Uri.parse(
                         "https://github.com/Gr3gorywolf/batocera_wine_manager"))
                   },
-              child: Text("View on github")),
+              child: const Text("View on github")),
         ]);
   }
 
@@ -197,10 +193,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Batocera wine manager"),
+          title: const Text("Batocera wine manager"),
           actions: [
-            IconButton(onPressed: handleShowInfoDialog, icon: Icon(Icons.info)),
-            IconButton(onPressed: () => {exit(0)}, icon: Icon(Icons.close))
+            IconButton(onPressed: handleShowInfoDialog, icon: const Icon(Icons.info)),
+            IconButton(onPressed: () => {exit(0)}, icon: const Icon(Icons.close))
           ],
         ),
         body: SingleChildScrollView(
@@ -216,7 +212,7 @@ class _HomePageState extends State<HomePage> {
                 ListTile(
                     title: Text("Redistributables", style: titleTextStyle)),
                 ListTile(
-                  title: Text(
+                  title: const Text(
                     "Download redistributables",
                   ),
                   subtitle: Column(
@@ -234,7 +230,7 @@ class _HomePageState extends State<HomePage> {
                                   Switch(
                                       value: redistInstallActive ?? false,
                                       onChanged: handleSetRedistActive),
-                                  Text(
+                                  const Text(
                                       "Enable redistributables install on wine application launch")
                                 ],
                               ),
@@ -243,7 +239,7 @@ class _HomePageState extends State<HomePage> {
                                   Switch(
                                       value: fastRedistInstallActive,
                                       onChanged: handleSetFastRedistInstall),
-                                  Text(
+                                  const Text(
                                       "Enable fast & automatic distributables install (Some games will need the full installation)")
                                 ],
                               )
@@ -257,18 +253,18 @@ class _HomePageState extends State<HomePage> {
                 ),
                 ListTile(title: Text("Proton versions", style: titleTextStyle)),
                 ListTile(
-                  leading: IconButton(
+                  leading: const IconButton(
                     onPressed: null,
                     icon: Icon(Icons.download, color: Colors.green),
                   ),
-                  title: Text(
+                  title: const Text(
                     "Proton default",
                   ),
                   subtitle: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         "The batocera's default wine version",
                       ),
                       Padding(
@@ -285,10 +281,10 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
-                Divider(),
+                const Divider(),
                 ...isFetchingReleases
                     ? [
-                        Center(
+                        const Center(
                           child: CircularProgressIndicator(),
                         )
                       ]

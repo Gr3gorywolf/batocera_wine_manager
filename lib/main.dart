@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.red,
       ),
-      home: HomePage(),
+      home: const HomePage(),
     );
   }
 }

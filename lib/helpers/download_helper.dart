@@ -8,7 +8,6 @@ import 'package:batocera_wine_manager/constants/paths.dart';
 import 'package:batocera_wine_manager/helpers/common_helpers.dart';
 import 'package:batocera_wine_manager/models/github_release.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 
 class DownloadHelper {
   static List<GithubRelease> _catchedReleases = [];
@@ -105,7 +104,7 @@ class DownloadHelper {
     var fileName = CommonHelpers.getFileNameFromUrl(protonDownloadUrl);
     var fileUrl = "$PROTONS_PATH/$fileName";
     var uncompressFolder =
-        PROTONS_PATH + "/" + fileName.replaceAll(".tar.gz", "");
+        "$PROTONS_PATH/${fileName.replaceAll(".tar.gz", "")}";
     var logFile = '$uncompressFolder/download-log.txt';
     return await _downloadAndUncompress(
         url: protonDownloadUrl,

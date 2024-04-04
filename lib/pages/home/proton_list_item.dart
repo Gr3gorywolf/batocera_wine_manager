@@ -1,8 +1,6 @@
 import 'package:batocera_wine_manager/models/download.dart';
 import 'package:batocera_wine_manager/models/github_release.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
 
 import '../../get_controllers/download_controller.dart';
@@ -95,7 +93,7 @@ class ProtonListItem extends StatelessWidget {
                                   onPressed: currentDownload == null
                                       ? null
                                       : () => onRemove(currentDownload),
-                                  child: Text("Delete this proton"),
+                                  child: const Text("Delete this proton"),
                                 ),
                               ),
                             ],
@@ -106,7 +104,7 @@ class ProtonListItem extends StatelessWidget {
               ],
             ),
           ),
-          Divider()
+          const Divider()
         ],
       );
     });
