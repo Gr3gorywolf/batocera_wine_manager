@@ -164,12 +164,7 @@ class FileSystemHelper {
 
   static Future<bool> overrideWineVersion(String wineFile) async {
     try {
-      var symlink = Link(protonOverridePath);
-      var protonOverrideDir = Directory(protonOverridePath);
-      if (protonOverrideDir.existsSync()) {
-        await protonOverrideDir.delete(recursive: true);
-      }
-      await symlink.create("$wineFile/files", recursive: true);
+      await CommonHelpers.copyDirectory("$wineFile/files", protonOverridePath);
       var regFile = File(wineOverrideFilePath);
       regFile.writeAsString(wineFile);
       return true;
