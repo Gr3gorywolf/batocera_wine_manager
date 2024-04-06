@@ -8,13 +8,13 @@ import '../../helpers/common_helpers.dart';
 import '../../helpers/download_helper.dart';
 import '../../widget/DownloadIconButton.dart';
 
-class ProtonListItem extends StatelessWidget {
+class WineListItem extends StatelessWidget {
   bool isActive;
   Function(Download) toggleActive;
   Function(Download) onRemove;
   GithubRelease protonRelease;
   DownloadController downloadController = Get.find();
-  ProtonListItem(
+  WineListItem(
       {required this.isActive,
       required this.toggleActive,
       required this.onRemove,
@@ -57,10 +57,12 @@ class ProtonListItem extends StatelessWidget {
       return Column(
         children: [
           ListTile(
+            enabled: true,
+            focusColor: Colors.blue,
             leading: DownloadIconButton(
                 downloadLink: releaseDownloadAsset?.browserDownloadUrl ?? '',
                 onPress: () {
-                  DownloadHelper().downloadProton(
+                  DownloadHelper().downloadWine(
                     releaseDownloadAsset?.browserDownloadUrl ?? '',
                   );
                 }),
@@ -84,8 +86,8 @@ class ProtonListItem extends StatelessWidget {
                                 onPressed: isActive || currentDownload == null
                                     ? null
                                     : () => toggleActive(currentDownload),
-                                child: Text(
-                                    isActive ? "On use" : "Use this proton"),
+                                child:
+                                    Text(isActive ? "On use" : "Use this wine"),
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(left: 10),
@@ -93,7 +95,7 @@ class ProtonListItem extends StatelessWidget {
                                   onPressed: currentDownload == null
                                       ? null
                                       : () => onRemove(currentDownload),
-                                  child: const Text("Delete this proton"),
+                                  child: const Text("Delete this wine"),
                                 ),
                               ),
                             ],

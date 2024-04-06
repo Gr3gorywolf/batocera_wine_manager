@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:batocera_wine_manager/constants/enums.dart';
 import 'package:batocera_wine_manager/constants/urls.dart';
 import 'package:batocera_wine_manager/get_controllers/download_controller.dart';
 import 'package:batocera_wine_manager/models/download.dart';
@@ -10,17 +11,42 @@ import 'package:batocera_wine_manager/models/github_release.dart';
 import 'package:dio/dio.dart';
 
 class DownloadHelper {
-  static List<GithubRelease> _catchedReleases = [];
-  Future<List<GithubRelease>?> fetchProtonReleases(
+  static Map<WINE_BUILDS, List<GithubRelease>> _catchedReleases = {};
+  Future<List<GithubRelease>?> _getOfflineWineReleases() async {
+    DownloadController downloads = Get.find();
+    var protons = downloads.downloads.values
+        .where((element) => element.status == DownloadStatus.downloaded)
+        .map((value) => GithubRelease(
+              name: value.fileName,
+              url: value.url,
+              tagName: value.fileName,
+              assets: [
+                GithubReleaseAsset(
+                    browserDownloadUrl: value.url,
+                    name: value.fileName,
+                    label: value.fileName,
+                    url: value.url)
+              ],
+            ))
+        .toList();
+    if (protons.isEmpty) {
+      return null;
+    }
+    return protons;
+  }
+
+  Future<List<GithubRelease>?> fetchWineReleases(
       {int maxPages = 4,
       int page = 1,
-      List<GithubRelease>? initialReleases}) async {
-    if (DownloadHelper._catchedReleases.isNotEmpty) {
-      return DownloadHelper._catchedReleases;
+      List<GithubRelease>? initialReleases,
+      WINE_BUILDS wineBuild = WINE_BUILDS.protonGe}) async {
+    if (DownloadHelper._catchedReleases[wineBuild] != null) {
+      return DownloadHelper._catchedReleases[wineBuild];
     }
+    var url = WINE_REPOS_RELEASES[wineBuild.name] ??
+        'https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases';
     try {
-      var res = await Dio().get(
-          "https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases?page=$page");
+      var res = await Dio().get("$url?page=$page");
       List<dynamic> resData = res.data;
       var releases =
           resData.map((release) => GithubRelease.fromJson(release)).toList();
@@ -31,13 +57,16 @@ class DownloadHelper {
         ];
       }
       if (page < maxPages) {
-        return await fetchProtonReleases(
-            maxPages: maxPages, initialReleases: releases, page: page + 1);
+        return await fetchWineReleases(
+            maxPages: maxPages,
+            initialReleases: releases,
+            page: page + 1,
+            wineBuild: wineBuild);
       }
-      DownloadHelper._catchedReleases = releases;
+      DownloadHelper._catchedReleases[wineBuild] = releases;
       return releases;
     } catch (err) {
-      return null;
+      return _getOfflineWineReleases();
     }
   }
 
@@ -99,15 +128,15 @@ class DownloadHelper {
         logFileUrl: '$REDIST_PATH_DISABLED/download-log.txt');
   }
 
-  Future<bool> downloadProton(String protonDownloadUrl) async {
+  Future<bool> downloadWine(String wineDownloadUrl) async {
     DownloadController downloadController = Get.find();
-    var fileName = CommonHelpers.getFileNameFromUrl(protonDownloadUrl);
+    var fileName = CommonHelpers.getFileNameFromUrl(wineDownloadUrl);
     var fileUrl = "$PROTONS_PATH/$fileName";
     var uncompressFolder =
         "$PROTONS_PATH/${fileName.replaceAll(".tar.gz", "")}";
     var logFile = '$uncompressFolder/download-log.txt';
     return await _downloadAndUncompress(
-        url: protonDownloadUrl,
+        url: wineDownloadUrl,
         fileUrl: fileUrl,
         logFileUrl: logFile,
         folderToUncompress: PROTONS_PATH);
