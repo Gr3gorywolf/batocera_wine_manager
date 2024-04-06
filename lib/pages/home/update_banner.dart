@@ -15,16 +15,16 @@ class UpdateBanner extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.max,
         children: [
-          const Icon(
+          Icon(
             Icons.update,
-            color: Colors.red,
+            color: Theme.of(context).primaryColor,
           ),
           const SizedBox(
             width: 10,
           ),
           Text(
             "There's a new update available: ${release?.name}",
-            style: const TextStyle(color: Colors.red),
+            style: TextStyle(color: Theme.of(context).primaryColor),
           ),
           const SizedBox(
             width: 10,

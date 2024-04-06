@@ -18,7 +18,7 @@ class RedistInstallationModes extends StatelessWidget {
                 value: REDIST_MODES.full,
                 groupValue: redistInstallMode,
                 onChanged: onModeChange),
-            const Text("Full installation (Start)")
+            const Text("Full installation (L1)")
           ],
         ),
         Row(
@@ -27,7 +27,7 @@ class RedistInstallationModes extends StatelessWidget {
                 value: REDIST_MODES.fast,
                 groupValue: redistInstallMode,
                 onChanged: onModeChange),
-            const Text("Fast installation (Select)")
+            const Text("Fast installation (L1 + R1)")
           ],
         ),
         Row(
@@ -36,7 +36,7 @@ class RedistInstallationModes extends StatelessWidget {
                 value: REDIST_MODES.disabled,
                 groupValue: redistInstallMode,
                 onChanged: onModeChange),
-            const Text("Disable installation (X or Y)")
+            const Text("Disable installation (R1)")
           ],
         )
       ],

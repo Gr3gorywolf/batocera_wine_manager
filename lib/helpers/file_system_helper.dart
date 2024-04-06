@@ -72,11 +72,14 @@ class FileSystemHelper {
     //Check for the downloaded redist
     var redistDir = FileSystemHelper.redistDirectory;
     if (redistDir != null) {
-      downloadController.setDownload(Download(
-          filePath: redistDir.path,
-          progress: 0,
-          url: REDIST_DOWNLOAD_LINK,
-          status: DownloadStatus.downloaded));
+      File logFile = File('${redistDir.path}/download-log.txt');
+      if (logFile.existsSync()) {
+        downloadController.setDownload(Download(
+            filePath: redistDir.path,
+            progress: 0,
+            url: REDIST_DOWNLOAD_LINK,
+            status: DownloadStatus.downloaded));
+      }
     }
   }
 

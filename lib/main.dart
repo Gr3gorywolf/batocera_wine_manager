@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
         useMaterial3: false,
-        primarySwatch: Colors.red,
+        primarySwatch: Colors.purple,
       ),
       home: const HomePage(),
     );

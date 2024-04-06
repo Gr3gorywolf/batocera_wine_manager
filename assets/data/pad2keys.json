@@ -57,26 +57,33 @@
             "target": "KEY_ENTER"
         },
         {
-            "trigger": "x",
+            "trigger": "pageup",
             "type": "key",
-            "target": "KEY_D"
+            "target": "KEY_A"
         },
         {
-            "trigger": "y",
+            "trigger": [
+                "pageup",
+                "pagedown"
+            ],
+            "type": "key",
+            "target": "KEY_S"
+        },
+        {
+            "trigger": "pagedown",
             "type": "key",
             "target": "KEY_D"
         },
         {
             "trigger": "start",
             "type": "key",
-            "target": "KEY_A"
+            "target": "KEY_ENTER"
         },
         {
             "trigger": "select",
             "type": "key",
-            "target": "KEY_S"
+            "target": "KEY_DELETE"
         }
-
     ],
     "actions_player2": [
         {
@@ -136,25 +143,32 @@
             "target": "KEY_ENTER"
         },
         {
-            "trigger": "x",
+            "trigger": "pageup",
             "type": "key",
-            "target": "KEY_D"
+            "target": "KEY_A"
         },
         {
-            "trigger": "y",
+            "trigger": [
+                "pageup",
+                "pagedown"
+            ],
+            "type": "key",
+            "target": "KEY_S"
+        },
+        {
+            "trigger": "pagedown",
             "type": "key",
             "target": "KEY_D"
         },
         {
             "trigger": "start",
             "type": "key",
-            "target": "KEY_A"
+            "target": "KEY_ENTER"
         },
         {
             "trigger": "select",
             "type": "key",
-            "target": "KEY_S"
+            "target": "KEY_DELETE"
         }
-
     ]
 }
