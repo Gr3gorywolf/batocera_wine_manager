@@ -42,6 +42,11 @@ class FileSystemHelper {
       }
     }
 
+    //sets the proper permissions
+    try {
+      var res = await Process.run("chmod", ["777", WINE_PATH]);
+    } catch (err) {}
+
     //Sets the old proton folder for batocera version < 39
     if (Directory('/usr/wine/proton').existsSync()) {
       wineProtonFolderName = 'proton';
