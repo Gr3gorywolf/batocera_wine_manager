@@ -140,12 +140,15 @@ class FileSystemHelper {
 
   static disableWineOverride() async {
     var protonOverrideDir = Directory(protonOverridePath);
-    if (protonOverrideDir.existsSync()) {
+    var protonLink = Link(protonOverridePath);
+    if (protonLink.existsSync()) {
+      await protonLink.delete();
+    } else if (protonOverrideDir.existsSync()) {
       await protonOverrideDir.delete(recursive: true);
-      var regFile = File(wineOverrideFilePath);
-      if (regFile.existsSync()) {
-        regFile.deleteSync();
-      }
+    }
+    var regFile = File(wineOverrideFilePath);
+    if (regFile.existsSync()) {
+      regFile.deleteSync();
     }
   }
 
@@ -167,10 +170,7 @@ class FileSystemHelper {
 
   static Future<bool> overrideWineVersion(String wineFile) async {
     try {
-      var protonOverride = Directory(protonOverridePath);
-      if (protonOverride.existsSync()) {
-        await protonOverride.delete(recursive: true);
-      }
+      await disableWineOverride();
       await Link(protonOverridePath).create("$wineFile/files");
       var regFile = File(wineOverrideFilePath);
       regFile.writeAsString(wineFile);
