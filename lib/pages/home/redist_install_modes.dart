@@ -27,7 +27,7 @@ class RedistInstallationModes extends StatelessWidget {
                 value: REDIST_MODES.fast,
                 groupValue: redistInstallMode,
                 onChanged: onModeChange),
-            const Text("Fast installation (L1 + R1)")
+            const Text("Fast installation (X / Y)")
           ],
         ),
         Row(

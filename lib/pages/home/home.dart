@@ -284,10 +284,13 @@ class _HomePageState extends State<HomePage> {
                               "Those redistributables will allow you to install all the needed dependencies in the wine application's folder on application launch - ${getRedistDownloadStatus()}"),
                           ...getRedistDownload() == null
                               ? [
-                                  ElevatedButton(
-                                    onPressed: handleDownloadRedist,
-                                    child: Text(
-                                        "Download redist ${focused ? '(Start)' : ''}"),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 5),
+                                    child: ElevatedButton(
+                                      onPressed: handleDownloadRedist,
+                                      child: Text(
+                                          "Download redist ${focused ? '(Start)' : ''}"),
+                                    ),
                                   ),
                                 ]
                               : []

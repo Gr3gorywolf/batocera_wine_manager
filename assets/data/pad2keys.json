@@ -60,12 +60,14 @@
             "trigger": "pageup",
             "type": "key",
             "target": "KEY_A"
+        }, 
+        {
+            "trigger": "x",
+            "type": "key",
+            "target": "KEY_S"
         },
         {
-            "trigger": [
-                "pageup",
-                "pagedown"
-            ],
+            "trigger": "y",
             "type": "key",
             "target": "KEY_S"
         },
