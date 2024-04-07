@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:batocera_wine_manager/constants/urls.dart';
 import 'package:batocera_wine_manager/get_controllers/download_controller.dart';
 import 'package:batocera_wine_manager/helpers/common_helpers.dart';
 import 'package:batocera_wine_manager/models/download.dart';
@@ -40,6 +41,12 @@ class FileSystemHelper {
         await currentDirectory.create(recursive: true);
       }
     }
+
+    //sets the proper permissions
+    try {
+      var res = await Process.run("chmod", ["777", WINE_PATH]);
+    } catch (err) {}
+
     //Sets the old proton folder for batocera version < 39
     if (Directory('/usr/wine/proton').existsSync()) {
       wineProtonFolderName = 'proton';
@@ -65,14 +72,12 @@ class FileSystemHelper {
     //Check for the downloaded redist
     var redistDir = FileSystemHelper.redistDirectory;
     if (redistDir != null) {
-      var files = await redistDir.list().toList();
       File logFile = File('${redistDir.path}/download-log.txt');
       if (logFile.existsSync()) {
-        var downloadUrl = logFile.readAsStringSync();
         downloadController.setDownload(Download(
             filePath: redistDir.path,
             progress: 0,
-            url: downloadUrl,
+            url: REDIST_DOWNLOAD_LINK,
             status: DownloadStatus.downloaded));
       }
     }
@@ -99,17 +104,13 @@ class FileSystemHelper {
   static Future<bool> toggleRedist(bool enable) async {
     var disabledDirectory = Directory(REDIST_PATH_DISABLED);
     var enabledDirectory = Directory(REDIST_PATH);
-    try {
-      if (enable && disabledDirectory.existsSync()) {
-        await disabledDirectory.rename(REDIST_PATH);
-      }
-      if (!enable && enabledDirectory.existsSync()) {
-        await enabledDirectory.rename(REDIST_PATH_DISABLED);
-      }
-      return enable;
-    } catch (err) {
-      return false;
+    if (enable && disabledDirectory.existsSync()) {
+      await disabledDirectory.rename(REDIST_PATH);
     }
+    if (!enable && enabledDirectory.existsSync()) {
+      await enabledDirectory.rename(REDIST_PATH_DISABLED);
+    }
+    return enable;
   }
 
   static bool fastRedistInstallEnabled() {
@@ -126,20 +127,15 @@ class FileSystemHelper {
       return false;
     }
     var fastRedistEnabled = FileSystemHelper.fastRedistInstallEnabled();
-    try {
-      if (enable && !fastRedistEnabled) {
-        await File("${redistDir.path}/STEAMY-AiO.exe")
-            .rename("${redistDir.path}/STEAMY-AiO.exe.bak");
-      }
-      if (!enable && fastRedistEnabled) {
-        await File("${redistDir.path}/STEAMY-AiO.exe.bak")
-            .rename("${redistDir.path}/STEAMY-AiO.exe");
-      }
-      return enable;
-    } catch (err) {
-      print(err);
-      return false;
+    if (enable && !fastRedistEnabled) {
+      await File("${redistDir.path}/STEAMY-AiO.exe")
+          .rename("${redistDir.path}/STEAMY-AiO.exe.bak");
     }
+    if (!enable && fastRedistEnabled) {
+      await File("${redistDir.path}/STEAMY-AiO.exe.bak")
+          .rename("${redistDir.path}/STEAMY-AiO.exe");
+    }
+    return enable;
   }
 
   static disableWineOverride() async {

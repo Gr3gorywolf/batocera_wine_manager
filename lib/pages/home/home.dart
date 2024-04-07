@@ -1,22 +1,22 @@
 import 'dart:io';
 
-import 'package:batocera_wine_manager/constants/paths.dart';
+import 'package:batocera_wine_manager/constants/enums.dart';
 import 'package:batocera_wine_manager/constants/urls.dart';
 import 'package:batocera_wine_manager/get_controllers/download_controller.dart';
-import 'package:batocera_wine_manager/helpers/common_helpers.dart';
 import 'package:batocera_wine_manager/helpers/download_helper.dart';
 import 'package:batocera_wine_manager/helpers/file_system_helper.dart';
 import 'package:batocera_wine_manager/helpers/ui_helpers.dart';
 import 'package:batocera_wine_manager/helpers/updates_helper.dart';
 import 'package:batocera_wine_manager/models/download.dart';
 import 'package:batocera_wine_manager/models/github_release.dart';
-import 'package:batocera_wine_manager/pages/home/proton_list_item.dart';
+import 'package:batocera_wine_manager/pages/home/default_wine_list_item.dart';
+import 'package:batocera_wine_manager/pages/home/redist_install_modes.dart';
+import 'package:batocera_wine_manager/pages/home/wine_list_item.dart';
 import 'package:batocera_wine_manager/pages/home/update_banner.dart';
+import 'package:batocera_wine_manager/widget/ActionableListItem.dart';
 import 'package:batocera_wine_manager/widget/DownloadIconButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -30,12 +30,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<GithubRelease> protonReleases = [];
   var isFetchingReleases = false;
-  var titleTextStyle = TextStyle(fontSize: 20, color: Colors.red);
+  var titleTextStyle = const TextStyle(fontSize: 20, color: Colors.purple);
   DownloadController downloadController = Get.find();
-  bool? redistInstallActive = null;
-  GithubRelease? newUpdate = null;
-  bool fastRedistInstallActive = false;
-  String? activeProtonName = null;
+  REDIST_MODES? redistInstallMode = null;
+  GithubRelease? newUpdate;
+  WINE_BUILDS wineBuild = WINE_BUILDS.protonGe;
+  String? activeProtonName;
+  int selectedIndex = 0;
   @override
   void initState() {
     // TODO: implement initState
@@ -45,6 +46,10 @@ class _HomePageState extends State<HomePage> {
     fetchReleases();
     initializeActiveProton();
     initializeRedist();
+    HardwareKeyboard.instance.addHandler((key) {
+      handleKeyEvent(key);
+      return true;
+    });
   }
 
   initializeNewUpdate() async {
@@ -57,9 +62,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   initializeRedist() async {
+    REDIST_MODES? newMode = null;
+    var installActive = FileSystemHelper.getRedistInstallActive();
+    var fastRedistInstall = FileSystemHelper.fastRedistInstallEnabled();
+    if (installActive != null) {
+      if (installActive) {
+        newMode = fastRedistInstall ? REDIST_MODES.fast : REDIST_MODES.full;
+      } else {
+        newMode = REDIST_MODES.disabled;
+      }
+    }
     setState(() {
-      redistInstallActive = FileSystemHelper.getRedistInstallActive();
-      fastRedistInstallActive = FileSystemHelper.fastRedistInstallEnabled();
+      redistInstallMode = newMode;
     });
   }
 
@@ -82,8 +96,12 @@ class _HomePageState extends State<HomePage> {
     return null;
   }
 
+  Download? getRedistDownload() {
+    return downloadController.downloads[REDIST_DOWNLOAD_LINK];
+  }
+
   String? getRedistDownloadStatus() {
-    var redistDownload = downloadController.downloads[REDIST_DOWNLOAD_LINK];
+    var redistDownload = getRedistDownload();
     if (redistDownload != null) {
       switch (redistDownload.status) {
         case DownloadStatus.downloading:
@@ -103,7 +121,8 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       isFetchingReleases = true;
     });
-    var releases = await DownloadHelper().fetchProtonReleases();
+    var releases =
+        await DownloadHelper().fetchWineReleases(wineBuild: wineBuild);
     if (releases != null) {
       setState(() {
         protonReleases = releases;
@@ -115,18 +134,46 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  handleSetRedistActive(bool isActive) async {
-    var toggleResult = await FileSystemHelper.toggleRedist(isActive);
-    setState(() {
-      redistInstallActive = toggleResult;
-    });
+  void handleKeyEvent(KeyEvent event) {
+    if (event.logicalKey == LogicalKeyboardKey.keyA) {
+      handleSetRedistInstallMode(REDIST_MODES.full);
+    }
+    if (event.logicalKey == LogicalKeyboardKey.keyS) {
+      handleSetRedistInstallMode(REDIST_MODES.fast);
+    }
+    if (event.logicalKey == LogicalKeyboardKey.keyD) {
+      handleSetRedistInstallMode(REDIST_MODES.disabled);
+    }
   }
 
-  handleSetFastRedistInstall(bool active) async {
-    var toggleResult = await FileSystemHelper.toggleFastRedistInstall(active);
-    setState(() {
-      fastRedistInstallActive = toggleResult;
-    });
+  handleSetRedistInstallMode(REDIST_MODES? mode) async {
+    if (mode == null || redistInstallMode == null) {
+      return;
+    }
+    try {
+      switch (mode) {
+        case REDIST_MODES.full:
+          {
+            await FileSystemHelper.toggleRedist(true);
+            await FileSystemHelper.toggleFastRedistInstall(false);
+            break;
+          }
+        case REDIST_MODES.fast:
+          {
+            await FileSystemHelper.toggleRedist(true);
+            await FileSystemHelper.toggleFastRedistInstall(true);
+            break;
+          }
+        case REDIST_MODES.disabled:
+          {
+            await FileSystemHelper.toggleRedist(false);
+            break;
+          }
+      }
+      setState(() {
+        redistInstallMode = mode;
+      });
+    } catch (err) {}
   }
 
   handleDownloadRedist() async {
@@ -144,7 +191,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   handleOverrideProton(Download protonDownload) async {
-    UiHelpers().showLoaderDialog(context, text: "Setting up proton...");
+    UiHelpers().showLoaderDialog(context, text: "Setting up wine version...");
     var overrideSucced =
         await FileSystemHelper.overrideWineVersion(protonDownload.filePath);
     if (overrideSucced) {
@@ -160,7 +207,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   handleRemoveProton(Download protonDownload) async {
-    UiHelpers().showLoaderDialog(context, text: "Removing proton...");
+    UiHelpers().showLoaderDialog(context, text: "Removing wine version...");
     var deleteSucceed =
         await FileSystemHelper.deleteProton(protonDownload.filePath);
 
@@ -183,13 +230,14 @@ class _HomePageState extends State<HomePage> {
         "App created by gr3gorywolf with ❤️ to manage wine versions & redistributables on batocera for a optimal windows experience",
         buttons: [
           TextButton(
-              onPressed: () => {Navigator.pop(context)}, child: Text("Close")),
+              onPressed: () => {Navigator.pop(context)},
+              child: const Text("Close")),
           TextButton(
               onPressed: () => {
                     launchUrl(Uri.parse(
                         "https://github.com/Gr3gorywolf/batocera_wine_manager"))
                   },
-              child: Text("View on github")),
+              child: const Text("View on github")),
         ]);
   }
 
@@ -197,14 +245,17 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Batocera wine manager"),
+          title: const Text("Batocera wine manager"),
           actions: [
-            IconButton(onPressed: handleShowInfoDialog, icon: Icon(Icons.info)),
-            IconButton(onPressed: () => {exit(0)}, icon: Icon(Icons.close))
+            IconButton(
+                onPressed: handleShowInfoDialog, icon: const Icon(Icons.info)),
+            IconButton(
+                onPressed: () => {exit(0)}, icon: const Icon(Icons.close))
           ],
         ),
-        body: SingleChildScrollView(
-          child: Focus(
+        body: KeyboardListener(
+          focusNode: FocusNode(),
+          child: SingleChildScrollView(
             child: Column(
               children: [
                 ...newUpdate != null
@@ -215,87 +266,79 @@ class _HomePageState extends State<HomePage> {
                     : [],
                 ListTile(
                     title: Text("Redistributables", style: titleTextStyle)),
-                ListTile(
-                  title: Text(
-                    "Download redistributables",
-                  ),
-                  subtitle: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Obx(() {
-                        return Text(
-                            "Those redistributables will allow you to install all the needed dependencies in the wine application's folder - ${getRedistDownloadStatus()}");
-                      }),
-                      ...redistInstallActive != null
-                          ? ([
-                              Row(
-                                children: [
-                                  Switch(
-                                      value: redistInstallActive ?? false,
-                                      onChanged: handleSetRedistActive),
-                                  Text(
-                                      "Enable redistributables install on wine application launch")
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Switch(
-                                      value: fastRedistInstallActive,
-                                      onChanged: handleSetFastRedistInstall),
-                                  Text(
-                                      "Enable fast & automatic distributables install (Some games will need the full installation)")
-                                ],
-                              )
-                            ])
-                          : []
-                    ],
-                  ),
-                  leading: DownloadIconButton(
-                      downloadLink: REDIST_DOWNLOAD_LINK,
-                      onPress: handleDownloadRedist),
-                ),
-                ListTile(title: Text("Proton versions", style: titleTextStyle)),
-                ListTile(
-                  leading: IconButton(
-                    onPressed: null,
-                    icon: Icon(Icons.download, color: Colors.green),
-                  ),
-                  title: Text(
-                    "Proton default",
-                  ),
-                  subtitle: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "The batocera's default wine version",
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 5),
-                        child: ElevatedButton(
-                          onPressed: activeProtonName == null
-                              ? null
-                              : () => handleDisableProtonOverride(),
-                          child: Text(activeProtonName == null
-                              ? "On use"
-                              : "Use this proton"),
+                ActionableListItem(enterPressed: () {
+                  if (getRedistDownload() == null) {
+                    handleDownloadRedist();
+                  }
+                }, builder: (focused) {
+                  return ListTile(
+                    title: const Text(
+                      "Common redistributables",
+                    ),
+                    subtitle: Obx(() {
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                              "Those redistributables will allow you to install all the needed dependencies in the wine application's folder on application launch - ${getRedistDownloadStatus()}"),
+                          ...getRedistDownload() == null
+                              ? [
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 5),
+                                    child: ElevatedButton(
+                                      onPressed: handleDownloadRedist,
+                                      child: Text(
+                                          "Download redist ${focused ? '(Start)' : ''}"),
+                                    ),
+                                  ),
+                                ]
+                              : []
+                        ],
+                      );
+                    }),
+                    leading: DownloadIconButton(
+                        downloadLink: REDIST_DOWNLOAD_LINK,
+                        onPress: handleDownloadRedist),
+                  );
+                }),
+                redistInstallMode != null
+                    ? ListTile(
+                        title: Text("Redist Installation mode",
+                            style: TextStyle(color: Colors.purple)),
+                        subtitle: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "If not disabled it will launch the installer every time that you launch a windows game",
+                              textAlign: TextAlign.left,
+                            ),
+                            SizedBox(
+                              height: 4,
+                            ),
+                            RedistInstallationModes(
+                                redistInstallMode: redistInstallMode,
+                                onModeChange: handleSetRedistInstallMode),
+                          ],
                         ),
                       )
-                    ],
-                  ),
-                ),
-                Divider(),
+                    : Container(),
+                ListTile(title: Text("Wine versions", style: titleTextStyle)),
+                DefaultWineListItem(
+                    isOnUse: activeProtonName == null,
+                    onUsePressed: handleDisableProtonOverride),
+                const Divider(),
                 ...isFetchingReleases
                     ? [
-                        Center(
+                        const Center(
                           child: CircularProgressIndicator(),
                         )
                       ]
                     : protonReleases.map((release) {
                         var releaseDownloadAsset =
                             getReleaseDownloadAsset(release);
-                        return ProtonListItem(
+                        return WineListItem(
                             onRemove: handleRemoveProton,
                             isActive: activeProtonName == null
                                 ? false

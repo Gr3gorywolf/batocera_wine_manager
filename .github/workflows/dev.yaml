@@ -3,7 +3,7 @@ name: Build Linux AppImage and Create Release
 on:
   push:
     branches:
-      - main  # Adjust the branch name as needed
+      - dev  # Adjust the branch name as needed
 
 jobs:
   build:
@@ -35,7 +35,3 @@ jobs:
         with:
           name: batocera_wine_manager
           path: build/linux/x64/release/bundle/batocera_wine_manager.zip
-      - uses: ncipollo/release-action@v1
-        with:
-          artifacts: "build/linux/x64/release/bundle/batocera_wine_manager.zip"
-          tag: v1.0.0-${{ github.run_number }}
