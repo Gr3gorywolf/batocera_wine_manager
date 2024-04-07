@@ -171,7 +171,7 @@ class FileSystemHelper {
       if (protonOverride.existsSync()) {
         await protonOverride.delete(recursive: true);
       }
-      await Link("$wineFile/files").create(protonOverridePath);
+      await Link(protonOverridePath).create("$wineFile/files");
       var regFile = File(wineOverrideFilePath);
       regFile.writeAsString(wineFile);
       return true;
