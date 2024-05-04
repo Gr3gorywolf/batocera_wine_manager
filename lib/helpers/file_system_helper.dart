@@ -35,6 +35,17 @@ class FileSystemHelper {
   static init() async {
     DownloadController downloadController = Get.find();
     var requiredDirectories = [WINE_PATH, PROTONS_PATH];
+    var oldProtonsDir = Directory(OLD_PROTONS_PATH);
+    //Uses new custom runner feature for batocera >= v40
+    if (oldProtonsDir.existsSync()) {
+      var overrunWine = await getWineOverrideName();
+      await disableWineOverride();
+      await oldProtonsDir.rename(PROTONS_PATH);
+      if (overrunWine != null) {
+        overrunWine = overrunWine.replaceAll(OLD_PROTONS_PATH, PROTONS_PATH);
+        await overrideWineVersion(overrunWine);
+      }
+    }
     for (var path in requiredDirectories) {
       var currentDirectory = Directory(path);
       if (!currentDirectory.existsSync()) {
