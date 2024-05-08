@@ -101,7 +101,6 @@ class DownloadHelper {
         '-C',
         outputFolder,
       ]);
-      await FileSystemHelper.patchProtonDownload(outputFolder);
       if (true) {
         File(fileUrl).deleteSync();
         var logFile = File(logFileUrl);
@@ -111,6 +110,7 @@ class DownloadHelper {
             url: url,
             status: DownloadStatus.downloaded));
       }
+      await FileSystemHelper.patchProtonDownload(outputFolder);
       return true;
     } catch (err) {
       print(err);

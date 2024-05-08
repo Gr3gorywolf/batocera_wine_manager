@@ -200,7 +200,7 @@ class FileSystemHelper {
   // Moves the proton files contents to the proton folder allowing it to be used by v40 runners
   static Future<void> patchProtonDownload(String protonFolder) async {
     String parentDirectoryPath = protonFolder;
-    String fileDirectoryPath = protonFolder + "/files";
+    String fileDirectoryPath = "$protonFolder/files";
     Directory fileDirectory = Directory(fileDirectoryPath);
     List<FileSystemEntity> contents = fileDirectory.listSync();
     for (FileSystemEntity entity in contents) {
