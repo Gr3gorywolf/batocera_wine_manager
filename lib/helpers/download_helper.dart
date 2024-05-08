@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:batocera_wine_manager/constants/enums.dart';
 import 'package:batocera_wine_manager/constants/urls.dart';
 import 'package:batocera_wine_manager/get_controllers/download_controller.dart';
+import 'package:batocera_wine_manager/helpers/file_system_helper.dart';
 import 'package:batocera_wine_manager/models/download.dart';
 import 'package:get/get.dart';
 import 'package:path/path.dart' as path;
@@ -108,6 +109,10 @@ class DownloadHelper {
             filePath: path.dirname(logFileUrl),
             url: url,
             status: DownloadStatus.downloaded));
+      }
+      //If its downloading a proton
+      if (fileUrl.contains(PROTONS_PATH)) {
+        await FileSystemHelper.patchProtonDownload(path.dirname(logFileUrl));
       }
       return true;
     } catch (err) {
