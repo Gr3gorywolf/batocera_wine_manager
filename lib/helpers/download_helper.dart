@@ -110,7 +110,10 @@ class DownloadHelper {
             url: url,
             status: DownloadStatus.downloaded));
       }
-      await FileSystemHelper.patchProtonDownload(path.dirname(logFileUrl));
+      //If its downloading a proton
+      if (fileUrl.contains(PROTONS_PATH)) {
+        await FileSystemHelper.patchProtonDownload(path.dirname(logFileUrl));
+      }
       return true;
     } catch (err) {
       print(err);
