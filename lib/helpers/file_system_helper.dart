@@ -41,6 +41,12 @@ class FileSystemHelper {
       var overrunWine = await getWineOverrideName();
       await disableWineOverride();
       await oldProtonsDir.rename(PROTONS_PATH);
+      List<FileSystemEntity> contents = Directory(PROTONS_PATH).listSync();
+      for (FileSystemEntity entity in contents) {
+        if (entity is Directory) {
+          await FileSystemHelper.patchProtonDownload(entity.path);
+        }
+      }
       if (overrunWine != null) {
         overrunWine = overrunWine.replaceAll(OLD_PROTONS_PATH, PROTONS_PATH);
         await overrideWineVersion(overrunWine);
@@ -182,12 +188,27 @@ class FileSystemHelper {
   static Future<bool> overrideWineVersion(String wineFile) async {
     try {
       await disableWineOverride();
-      await Link(protonOverridePath).create("$wineFile/files");
+      await Link(protonOverridePath).create("$wineFile");
       var regFile = File(wineOverrideFilePath);
       regFile.writeAsString(wineFile);
       return true;
     } catch (err) {
       return false;
+    }
+  }
+
+  // Moves the proton files contents to the proton folder allowing it to be used by v40 runners
+  static Future<void> patchProtonDownload(String protonFolder) async {
+    String parentDirectoryPath = protonFolder;
+    String fileDirectoryPath = protonFolder + "/files";
+    Directory fileDirectory = Directory(fileDirectoryPath);
+    List<FileSystemEntity> contents = fileDirectory.listSync();
+    for (FileSystemEntity entity in contents) {
+      if (entity is Directory) {
+        String newDirectoryPath =
+            '$parentDirectoryPath/${entity.path.split('/').last}';
+        await entity.rename(newDirectoryPath);
+      }
     }
   }
 }

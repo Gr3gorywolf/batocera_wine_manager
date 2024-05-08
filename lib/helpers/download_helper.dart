@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:batocera_wine_manager/constants/enums.dart';
 import 'package:batocera_wine_manager/constants/urls.dart';
 import 'package:batocera_wine_manager/get_controllers/download_controller.dart';
+import 'package:batocera_wine_manager/helpers/file_system_helper.dart';
 import 'package:batocera_wine_manager/models/download.dart';
 import 'package:get/get.dart';
 import 'package:path/path.dart' as path;
@@ -100,6 +101,7 @@ class DownloadHelper {
         '-C',
         outputFolder,
       ]);
+      await FileSystemHelper.patchProtonDownload(outputFolder);
       if (true) {
         File(fileUrl).deleteSync();
         var logFile = File(logFileUrl);

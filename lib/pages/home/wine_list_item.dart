@@ -132,7 +132,7 @@ class _WineListItemState extends State<WineListItem> {
                                               .toggleActive(currentDownload!),
                                       child: Text(widget.isActive
                                           ? "On use"
-                                          : "Use this wine ${focus ? '(Start)' : ''}"),
+                                          : "Set as system default ${focus ? '(Start)' : ''}"),
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.only(left: 10),
