@@ -28,8 +28,8 @@ curl -L cdn.gregoryc.dev/wine-manager | bash
 This script will automatically download and install Batocera Wine Manager on your system.
 ## Compatibility
 The Wine manager is compatible and tested with all batocera versions that uses proton, For versions < 39 please set proton as default windows emulator in order to use the correct version
-### Note for  batocera > v40
-Since on v40 the batocera team added the new runners option on windows games, wine selection is managed by batocera on the game settings, the protons will be downloaded on the proper folder for you to select any downloaded proton version on the game's runner selection option, note that every time that you change the proton version it creates a new bottle for that game on a different folder so you should move the saves manually
+#### Note for  batocera >= v40
+Since on v40 the batocera team added the new runners option on windows games, wine selection is managed by batocera on the game settings, the protons will be downloaded on the proper folder for you to select any downloaded proton version on the game's runner selection option, note that every time that you change the proton version it creates a new bottle for that game on a different folder so you should move the saves manually between bottles
 
 ## Usage
 
