@@ -110,7 +110,7 @@ class DownloadHelper {
             url: url,
             status: DownloadStatus.downloaded));
       }
-      await FileSystemHelper.patchProtonDownload(outputFolder);
+      await FileSystemHelper.patchProtonDownload(path.dirname(logFileUrl));
       return true;
     } catch (err) {
       print(err);
