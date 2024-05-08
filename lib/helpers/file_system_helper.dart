@@ -36,6 +36,10 @@ class FileSystemHelper {
     DownloadController downloadController = Get.find();
     var requiredDirectories = [WINE_PATH, PROTONS_PATH];
     var oldProtonsDir = Directory(OLD_PROTONS_PATH);
+    //Sets the old proton folder for batocera version < 39
+    if (Directory('/usr/wine/proton').existsSync()) {
+      wineProtonFolderName = 'proton';
+    }
     //Uses new custom runner feature for batocera >= v40
     if (oldProtonsDir.existsSync()) {
       var overrunWine = await getWineOverrideName();
@@ -63,11 +67,6 @@ class FileSystemHelper {
     try {
       var res = await Process.run("chmod", ["777", WINE_PATH]);
     } catch (err) {}
-
-    //Sets the old proton folder for batocera version < 39
-    if (Directory('/usr/wine/proton').existsSync()) {
-      wineProtonFolderName = 'proton';
-    }
 
     //Check for the downloaded protons
     var protonsDirectory = Directory(PROTONS_PATH);
@@ -202,12 +201,14 @@ class FileSystemHelper {
     String parentDirectoryPath = protonFolder;
     String fileDirectoryPath = "$protonFolder/files";
     Directory fileDirectory = Directory(fileDirectoryPath);
-    List<FileSystemEntity> contents = fileDirectory.listSync();
-    for (FileSystemEntity entity in contents) {
-      if (entity is Directory) {
-        String newDirectoryPath =
-            '$parentDirectoryPath/${entity.path.split('/').last}';
-        await entity.rename(newDirectoryPath);
+    if (fileDirectory.existsSync()) {
+      List<FileSystemEntity> contents = fileDirectory.listSync();
+      for (FileSystemEntity entity in contents) {
+        if (entity is Directory) {
+          String newDirectoryPath =
+              '$parentDirectoryPath/${entity.path.split('/').last}';
+          await entity.rename(newDirectoryPath);
+        }
       }
     }
   }
