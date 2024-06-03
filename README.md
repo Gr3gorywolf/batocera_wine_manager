@@ -22,7 +22,7 @@ Batocera Wine Manager is an application designed to manage Wine Proton on the Ba
 To install Batocera Wine Manager, run the following command in your Batocera system terminal:
 
 ```bash
-curl -L links.gregoryc.dev/wine-manager | bash
+curl -L cdn.gregoryc.dev/wine-manager | bash
 ```
 
 This script will automatically download and install Batocera Wine Manager on your system.
