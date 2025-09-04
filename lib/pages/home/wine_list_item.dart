@@ -33,7 +33,9 @@ class _WineListItemState extends State<WineListItem> {
   GithubReleaseAsset? get releaseDownloadAsset {
     var releaseAssets = widget.protonRelease.assets;
     if (releaseAssets != null && releaseAssets.isNotEmpty) {
-      return widget.protonRelease.assets?.last;
+      return widget.protonRelease.assets
+          ?.where((element) => element.name?.endsWith(".tar.gz") ?? false)
+          .first;
     }
     return null;
   }

@@ -101,15 +101,15 @@ class DownloadHelper {
         '-C',
         outputFolder,
       ]);
-      if (true) {
-        File(fileUrl).deleteSync();
-        var logFile = File(logFileUrl);
-        logFile.writeAsStringSync(url);
-        downloadController.setDownload(Download(
-            filePath: path.dirname(logFileUrl),
-            url: url,
-            status: DownloadStatus.downloaded));
-      }
+
+      File(fileUrl).deleteSync();
+      var logFile = File(logFileUrl);
+      logFile.writeAsStringSync(url);
+      downloadController.setDownload(Download(
+          filePath: path.dirname(logFileUrl),
+          url: url,
+          status: DownloadStatus.downloaded));
+
       //If its downloading a proton
       if (fileUrl.contains(PROTONS_PATH)) {
         await FileSystemHelper.patchProtonDownload(path.dirname(logFileUrl));
